@@ -675,118 +675,8 @@
   </div>
 
   <script>
-    // Sample player data
-    const players = [
-      {
-        name: "edgemainn",
-        highest: "HT3",
-        total: 18,
-        categories: ["Sword"],
-        tiers: [
-          { label: "HT3", points: 8, category: "Sword" },
-          { label: "HT3", points: 10, category: "Sword" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "ItzPvPGod",
-        highest: "HT2",
-        total: 24,
-        categories: ["Sword", "Axe"],
-        tiers: [
-          { label: "HT2", points: 14, category: "Sword" },
-          { label: "HT3", points: 10, category: "Axe" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "CrystalKing",
-        highest: "HT1",
-        total: 32,
-        categories: ["Vanilla", "UHC"],
-        tiers: [
-          { label: "HT1", points: 20, category: "Vanilla" },
-          { label: "HT2", points: 12, category: "UHC" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "PotMaster99",
-        highest: "HT2",
-        total: 19,
-        categories: ["Pot"],
-        tiers: [
-          { label: "HT2", points: 12, category: "Pot" },
-          { label: "HT3", points: 7, category: "Pot" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "NetherDemon",
-        highest: "HT1",
-        total: 28,
-        categories: ["NethOP", "Sword"],
-        tiers: [
-          { label: "HT1", points: 18, category: "NethOP" },
-          { label: "HT3", points: 10, category: "Sword" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "SMPLegend",
-        highest: "HT2",
-        total: 15,
-        categories: ["SMP"],
-        tiers: [
-          { label: "HT2", points: 15, category: "SMP" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "AxeSlayer",
-        highest: "HT1",
-        total: 26,
-        categories: ["Axe", "Mace"],
-        tiers: [
-          { label: "HT1", points: 16, category: "Axe" },
-          { label: "HT2", points: 10, category: "Mace" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "MaceGod",
-        highest: "HT2",
-        total: 21,
-        categories: ["Mace"],
-        tiers: [
-          { label: "HT2", points: 13, category: "Mace" },
-          { label: "HT3", points: 8, category: "Mace" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "UHCWarrior",
-        highest: "HT1",
-        total: 30,
-        categories: ["UHC", "Vanilla"],
-        tiers: [
-          { label: "HT1", points: 18, category: "UHC" },
-          { label: "HT2", points: 12, category: "Vanilla" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      },
-      {
-        name: "LeafPro",
-        highest: "HT3",
-        total: 12,
-        categories: ["Sword", "Pot"],
-        tiers: [
-          { label: "HT3", points: 7, category: "Sword" },
-          { label: "HT3", points: 5, category: "Pot" }
-        ],
-        emojis: ["crystal", "helmet", "heart"]
-      }
-    ];
+    // Player data - will be loaded from API
+    let players = [];
 
     let currentFilter = "All";
     let currentSearch = "";
@@ -794,6 +684,64 @@
     const playerList = document.getElementById("player-list");
     const mainSearch = document.getElementById("mainSearch");
     const filterButtons = document.querySelectorAll(".filter-btn");
+
+    // Load players from API
+    async function loadPlayersFromAPI() {
+      try {
+        const response = await fetch('/api/tiers');
+        const data = await response.json();
+        
+        // Convert API data to player format
+        players = [];
+        
+        if (data.players) {
+          Object.keys(data.players).forEach(username => {
+            const playerData = data.players[username];
+            const gamemodes = playerData.gamemodes || {};
+            
+            // Calculate total points and find highest tier
+            let totalPoints = 0;
+            let highestTier = 'LT5';
+            let categories = [];
+            let tiers = [];
+            
+            Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
+              const points = tierData.points || 0;
+              const tier = tierData.tier || 'LT5';
+              
+              totalPoints += points;
+              categories.push(gamemode);
+              tiers.push({
+                label: tier,
+                points: points,
+                category: gamemode
+              });
+              
+              // Update highest tier based on points
+              if (points >= 45) highestTier = 'HT1';
+              else if (points >= 35 && highestTier !== 'HT1') highestTier = 'MT1';
+              else if (points >= 25 && highestTier !== 'HT1' && highestTier !== 'MT1') highestTier = 'LT1';
+              else if (points >= 20 && highestTier !== 'HT1' && highestTier !== 'MT1' && highestTier !== 'LT1') highestTier = 'HT2';
+            });
+            
+            players.push({
+              name: username,
+              highest: highestTier,
+              total: totalPoints,
+              categories: categories,
+              tiers: tiers,
+              emojis: ["crystal", "helmet", "heart"]
+            });
+          });
+        }
+        
+        renderPlayers();
+      } catch (error) {
+        console.error('Error loading players:', error);
+        players = [];
+        renderPlayers();
+      }
+    }
 
     function getGamemodeIcon(category) {
       const icons = {
@@ -836,7 +784,11 @@
       filtered.sort((a, b) => b.total - a.total);
 
       if (filtered.length === 0) {
-        playerList.innerHTML = `<div class="no-results">No players found</div>`;
+        if (players.length === 0) {
+          playerList.innerHTML = `<div class="no-results">No players have been tiered yet. Use the Discord bot to add players!</div>`;
+        } else {
+          playerList.innerHTML = `<div class="no-results">No players found</div>`;
+        }
         return;
       }
 
@@ -940,8 +892,27 @@
       }
     });
 
-    // Initial render
-    renderPlayers();
+    // WebSocket connection for real-time updates
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${wsProtocol}//${window.location.host}`);
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'update') {
+        loadPlayersFromAPI();
+      }
+    };
+    
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+    // Initial load from API
+    loadPlayersFromAPI();
   </script>
 </body>
 </html>
