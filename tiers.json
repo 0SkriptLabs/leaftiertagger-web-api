@@ -1,3 +1,12 @@
 {
-  "players": {}
+  "players": {
+    "edgemainn": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "LT3",
+          "points": 0
+        }
+      }
+    }
+  }
 }
