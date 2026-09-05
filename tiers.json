@@ -4,7 +4,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "LT3",
-          "points": 0
+          "points": 6
         }
       }
     },
@@ -12,7 +12,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "HT2",
-          "points": 77
+          "points": 30
         }
       }
     },
@@ -20,7 +20,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "LT5",
-          "points": 0
+          "points": 1
         }
       }
     },
@@ -28,7 +28,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "HT3",
-          "points": 0
+          "points": 10
         }
       }
     },
@@ -36,7 +36,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "HT3",
-          "points": 0
+          "points": 10
         }
       }
     },
@@ -44,7 +44,7 @@
       "gamemodes": {
         "Crystal": {
           "tier": "HT5",
-          "points": 0
+          "points": 2
         }
       }
     }
