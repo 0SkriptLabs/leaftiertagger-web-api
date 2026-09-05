@@ -1984,6 +1984,25 @@ const unverifyCommand =
           .setRequired(true)
     );
 
+const removeTierCommand =
+  new SlashCommandBuilder()
+    .setName("removetier")
+    .setDescription("Remove a player from the website")
+    .addUserOption(
+      option =>
+        option
+          .setName("user")
+          .setDescription("Discord user to remove from website")
+          .setRequired(true)
+    )
+    .addStringOption(
+      option =>
+        option
+          .setName("username")
+          .setDescription("Minecraft username to remove")
+          .setRequired(true)
+    );
+
 const openQueueCommand =
   new SlashCommandBuilder()
     .setName("openqueue")
@@ -2102,7 +2121,8 @@ client.once(
             pullCommand.toJSON(),
             punishCommand.toJSON(),
             sendCommand.toJSON(),
-            unverifyCommand.toJSON()
+            unverifyCommand.toJSON(),
+            removeTierCommand.toJSON()
           ]
         }
       );
@@ -3671,6 +3691,79 @@ if (
           flags:
             MessageFlags.Ephemeral
         });
+      }
+
+      if (
+        interaction.commandName ===
+          "removetier"
+      ) {
+        const allowed =
+          await isStaffOrAbove(
+            interaction.guild,
+            interaction.user.id
+          );
+
+        if (!allowed) {
+          return interaction.reply({
+            content:
+              "You do not have permission to use this command.",
+            flags:
+              MessageFlags.Ephemeral
+          });
+        }
+
+        const user =
+          interaction.options
+            .getUser(
+              "user"
+            );
+
+        const username =
+          interaction.options
+            .getString(
+              "username"
+            );
+
+        try {
+          const websiteResponse = await fetch(`${WEBSITE_URL}/api/discord/remove`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${WEBSITE_API_KEY}`
+            },
+            body: JSON.stringify({
+              username: username
+            })
+          });
+          
+          const websiteResult = await websiteResponse.json();
+          
+          if (websiteResult.success) {
+            console.log(`Removed ${username} from website`);
+            return interaction.reply({
+              content:
+                `Successfully removed ${username} from the website.`,
+              flags:
+                MessageFlags.Ephemeral
+            });
+          } else {
+            console.error(`Failed to remove from website: ${websiteResult.error}`);
+            return interaction.reply({
+              content:
+                `Failed to remove from website: ${websiteResult.error}`,
+              flags:
+                MessageFlags.Ephemeral
+            });
+          }
+        } catch (error) {
+          console.error('Error removing from website:', error);
+          return interaction.reply({
+            content:
+              'Failed to remove from website. Please try again later.',
+            flags:
+              MessageFlags.Ephemeral
+          });
+        }
       }
     } catch (error) {
       console.error(

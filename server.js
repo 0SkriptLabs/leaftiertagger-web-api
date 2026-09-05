@@ -154,6 +154,52 @@ app.post('/api/discord/update', (req, res) => {
     }
 });
 
+// Discord bot endpoint to remove a player from the website
+app.post('/api/discord/remove', (req, res) => {
+    try {
+        // Verify API key
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        
+        const providedKey = authHeader.substring(7);
+        if (providedKey !== DISCORD_BOT_API_KEY) {
+            return res.status(403).json({ error: 'Invalid API key' });
+        }
+
+        const { username } = req.body;
+        
+        if (!username) {
+            return res.status(400).json({ error: 'Username is required' });
+        }
+        
+        // Initialize data file if needed
+        initDataFile();
+        
+        let data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+        
+        const usernameLower = username.toLowerCase();
+        
+        if (!data.players[usernameLower]) {
+            return res.status(404).json({ error: 'Player not found' });
+        }
+        
+        // Remove the player
+        delete data.players[usernameLower];
+        
+        fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        
+        // Notify connected clients about the update
+        notifyClients();
+        
+        res.json({ success: true, message: `Removed ${username} from the website` });
+    } catch (error) {
+        console.error('Error removing player:', error);
+        res.status(500).json({ error: 'Failed to remove player' });
+    }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
