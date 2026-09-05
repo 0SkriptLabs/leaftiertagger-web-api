@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -124,6 +124,7 @@
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #fff;
+      cursor: pointer;
     }
 
     .nav-links {
@@ -143,6 +144,27 @@
       color: #fff;
     }
 
+    .header-search {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 9px 16px;
+      color: #c0c0d0;
+      font-size: 0.9rem;
+      width: 200px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .header-search::placeholder {
+      color: #6a6a80;
+    }
+
+    .header-search:focus {
+      border-color: rgba(120, 100, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
     .container {
       position: relative;
       z-index: 5;
@@ -152,12 +174,14 @@
     }
 
     .card {
-      background-color: #16213e;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      position: relative;
-      z-index: 10;
+      background: linear-gradient(145deg, rgba(30, 30, 50, 0.75), rgba(20, 20, 40, 0.85));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px 32px 24px;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset;
     }
 
     .filters {
@@ -168,22 +192,28 @@
     }
 
     .filter-btn {
-      background-color: #00ff88;
-      color: #1a1a2e;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #b0b0c8;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      font-weight: bold;
+      transition: all 0.2s ease;
+      user-select: none;
     }
 
     .filter-btn:hover {
-      background-color: #00cc6a;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
 
     .filter-btn.active {
-      background-color: #5a8cff;
-      color: white;
+      background: linear-gradient(135deg, #7b5cff, #5a8cff);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(100, 90, 255, 0.35);
     }
 
     .secondary-bar {
@@ -195,14 +225,15 @@
     }
 
     .tab-btn {
-      background-color: #00c6ff;
-      color: white;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
       border: none;
-      padding: 10px 20px;
+      color: #fff;
+      padding: 8px 18px;
       border-radius: 10px;
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 150, 255, 0.3);
     }
 
     .search-wrapper {
@@ -212,7 +243,7 @@
     }
 
     .search-wrapper::before {
-      content: '🔍';
+      content: '≡ƒöì';
       position: absolute;
       left: 14px;
       top: 50%;
@@ -224,17 +255,17 @@
 
     .search-input {
       width: 100%;
-      background-color: #1a1a2e;
-      border: 1px solid #0f3460;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       padding: 9px 16px 9px 40px;
-      color: #eee;
+      color: #d0d0e0;
       font-size: 0.9rem;
       outline: none;
     }
 
     .search-input:focus {
-      border-color: #5a8cff;
+      border-color: rgba(120, 100, 255, 0.4);
     }
 
     .server-ip {
@@ -253,12 +284,12 @@
       display: grid;
       grid-template-columns: 60px 1fr 220px 120px;
       padding: 12px 16px;
-      background-color: #0f3460;
+      background: rgba(255, 255, 255, 0.03);
       border-radius: 12px 12px 0 0;
       font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.8px;
-      color: #00ff88;
+      color: #8a8aa0;
       text-transform: uppercase;
     }
 
@@ -272,7 +303,7 @@
       grid-template-columns: 60px 1fr 220px 120px;
       align-items: center;
       padding: 18px 16px;
-      background-color: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.02);
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       transition: background 0.2s, opacity 0.2s;
       cursor: pointer;
@@ -283,9 +314,10 @@
     }
 
     .player-row:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
 
+    /* Rank colors */
     .rank {
       font-size: 1.25rem;
       font-weight: 700;
@@ -293,14 +325,17 @@
 
     .rank-1 {
       color: #ffd700;
+      text-shadow: 0 0 14px rgba(255, 215, 0, 0.55);
     }
 
     .rank-2 {
       color: #c0c0c0;
+      text-shadow: 0 0 12px rgba(192, 192, 192, 0.45);
     }
 
     .rank-3 {
       color: #cd7f32;
+      text-shadow: 0 0 12px rgba(205, 127, 50, 0.5);
     }
 
     .rank-other {
@@ -317,7 +352,7 @@
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      background-color: #1a1a2e;
+      background: #1a1a2e;
       border: 2px solid rgba(255, 200, 80, 0.5);
       box-shadow: 0 0 15px rgba(255, 180, 50, 0.25);
       overflow: hidden;
@@ -352,7 +387,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
       padding: 5px 12px;
@@ -361,6 +396,7 @@
       width: fit-content;
     }
 
+    /* Tier label colors (MCTIERS style) */
     .tier-badge .ht {
       font-weight: 700;
       font-size: 0.75rem;
@@ -395,10 +431,17 @@
       font-weight: 500;
     }
 
+    .sword-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.85;
+    }
+
     .total-points {
       font-size: 1.25rem;
       font-weight: 700;
       color: #ffcc33;
+      text-shadow: 0 0 14px rgba(255, 200, 50, 0.35);
       text-align: right;
     }
 
@@ -411,23 +454,26 @@
       border-radius: 0 0 14px 14px;
     }
 
-    /* Custom Modal Styles */
-    .modal-overlay {
+    /* Player Modal Styles */
+    .player-modal-overlay {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.8);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(8px);
     }
-    .modal-overlay.active {
+
+    .player-modal-overlay.active {
       display: flex;
     }
-    .modal {
+
+    .player-modal {
       background: linear-gradient(145deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.98));
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 20px;
@@ -439,6 +485,7 @@
         0 25px 60px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
+
     .modal-close {
       position: absolute;
       top: 16px;
@@ -456,15 +503,18 @@
       justify-content: center;
       transition: background 0.2s;
     }
+
     .modal-close:hover {
       background: rgba(255, 68, 68, 0.3);
     }
+
     .modal-header {
       display: flex;
       align-items: center;
       gap: 20px;
       margin-bottom: 24px;
     }
+
     .modal-avatar {
       width: 80px;
       height: 80px;
@@ -473,33 +523,40 @@
       box-shadow: 0 0 20px rgba(255, 180, 50, 0.3);
       overflow: hidden;
     }
+
     .modal-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .modal-player-info h3 {
       color: #fff;
+      font-size: 1.5rem;
       margin-bottom: 4px;
     }
+
     .modal-player-info .rank {
       color: #ffcc33;
       font-size: 0.9rem;
       font-weight: 600;
     }
+
     .modal-stats {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
       margin-bottom: 24px;
     }
+
     .stat-box {
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 16px;
       text-align: center;
     }
+
     .stat-box .label {
       color: #8a8aa0;
       font-size: 0.8rem;
@@ -507,20 +564,24 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .stat-box .value {
       color: #fff;
       font-size: 1.4rem;
       font-weight: 700;
     }
+
     .stat-box .tier-value {
       font-size: 1.2rem;
     }
+
     .modal-emoji-section {
       background: rgba(255, 255, 255, 0.03);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
     }
+
     .modal-emoji-section h4 {
       color: #8a8aa0;
       font-size: 0.85rem;
@@ -528,26 +589,27 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .emoji-grid {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .emoji-item {
       font-size: 1.8rem;
       cursor: pointer;
       transition: transform 0.2s;
     }
+
     .emoji-item:hover {
       transform: scale(1.2);
     }
-    .emoji-item img {
-      width: 24px;
-      height: 24px;
-    }
+
     .modal-tiers {
       margin-bottom: 20px;
     }
+
     .modal-tiers h4 {
       color: #8a8aa0;
       font-size: 0.85rem;
@@ -555,19 +617,51 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .modal-tier-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
+
     .modal-tier-list .tier-badge {
       width: 100%;
       justify-content: space-between;
     }
-    .gamemode-icon {
-      width: 14px;
-      height: 14px;
-      opacity: 0.85;
+
+    @media (max-width: 700px) {
+      header {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-search {
+        width: 100%;
+        order: 3;
+      }
+
+      .table-header,
+      .player-row {
+        grid-template-columns: 50px 1fr;
+        gap: 12px;
+      }
+
+      .tiers,
+      .total-points,
+      .table-header span:nth-child(3),
+      .table-header span:nth-child(4) {
+        display: none;
+      }
+
+      .secondary-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .server-ip {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
@@ -600,12 +694,13 @@
       <a href="#">Rankings</a>
       <a href="admin.html">Admin</a>
     </nav>
+    <input type="text" class="header-search" id="headerSearch" placeholder="Search player...">
   </header>
 
   <!-- Player Modal -->
-  <div class="modal-overlay" id="playerModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closePlayerModal()">×</button>
+  <div class="player-modal-overlay" id="playerModal">
+    <div class="player-modal">
+      <button class="modal-close" onclick="closePlayerModal()">├ù</button>
       <div class="modal-header">
         <div class="modal-avatar">
           <img id="modalAvatar" src="" alt="Player Avatar">
@@ -628,11 +723,11 @@
       <div class="modal-emoji-section">
         <h4>Custom Emojis</h4>
         <div class="emoji-grid" id="modalEmojis">
-          <span class="emoji-item"><img src="/images/crystal.png" alt="crystal"></span>
-          <span class="emoji-item"><img src="/images/helmet.png" alt="helmet"></span>
-          <span class="emoji-item"><img src="/images/heart.png" alt="heart"></span>
-          <span class="emoji-item"><img src="/images/pickaxe.png" alt="pickaxe"></span>
-          <span class="emoji-item"><img src="/images/bow.png" alt="bow"></span>
+          <span class="emoji-item">ΓÜö∩╕Å</span>
+          <span class="emoji-item">≡ƒÅå</span>
+          <span class="emoji-item">≡ƒææ</span>
+          <span class="emoji-item">≡ƒöÑ</span>
+          <span class="emoji-item">≡ƒÆÄ</span>
         </div>
       </div>
       <div class="modal-tiers">
@@ -662,7 +757,7 @@
           <input type="text" class="search-input" id="mainSearch" placeholder="Search player...">
         </div>
         <div class="server-ip">
-          SERVER IP <span>leaftiers.com</span>
+          SERVER IP <span>leaftierlist.com</span>
         </div>
       </div>
 
@@ -689,7 +784,7 @@
           { label: "HT3", points: 8, category: "Sword" },
           { label: "HT3", points: 10, category: "Sword" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["ΓÜö∩╕Å", "≡ƒöÑ", "≡ƒÆÄ"]
       },
       {
         name: "ItzPvPGod",
@@ -700,7 +795,7 @@
           { label: "HT2", points: 14, category: "Sword" },
           { label: "HT3", points: 10, category: "Axe" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒÅå", "ΓÜö∩╕Å", "≡ƒææ"]
       },
       {
         name: "CrystalKing",
@@ -711,7 +806,7 @@
           { label: "HT1", points: 20, category: "Vanilla" },
           { label: "HT2", points: 12, category: "UHC" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒææ", "≡ƒÆÄ", "≡ƒöÑ"]
       },
       {
         name: "PotMaster99",
@@ -722,7 +817,7 @@
           { label: "HT2", points: 12, category: "Pot" },
           { label: "HT3", points: 7, category: "Pot" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒº¬", "ΓÜö∩╕Å"]
       },
       {
         name: "NetherDemon",
@@ -733,7 +828,7 @@
           { label: "HT1", points: 18, category: "NethOP" },
           { label: "HT3", points: 10, category: "Sword" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒöÑ", "≡ƒÿê", "ΓÜö∩╕Å"]
       },
       {
         name: "SMPLegend",
@@ -743,7 +838,7 @@
         tiers: [
           { label: "HT2", points: 15, category: "SMP" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒÅá", "≡ƒîƒ", "≡ƒÆÄ"]
       },
       {
         name: "AxeSlayer",
@@ -754,7 +849,7 @@
           { label: "HT1", points: 16, category: "Axe" },
           { label: "HT2", points: 10, category: "Mace" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒ¬ô", "ΓÜö∩╕Å", "≡ƒöÑ"]
       },
       {
         name: "MaceGod",
@@ -765,7 +860,7 @@
           { label: "HT2", points: 13, category: "Mace" },
           { label: "HT3", points: 8, category: "Mace" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒö¿", "≡ƒÆ¬", "≡ƒÅå"]
       },
       {
         name: "UHCWarrior",
@@ -776,7 +871,7 @@
           { label: "HT1", points: 18, category: "UHC" },
           { label: "HT2", points: 12, category: "Vanilla" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["ΓÜö∩╕Å", "≡ƒÅå", "Γ¥ñ∩╕Å"]
       },
       {
         name: "LeafPro",
@@ -787,7 +882,7 @@
           { label: "HT3", points: 7, category: "Sword" },
           { label: "HT3", points: 5, category: "Pot" }
         ],
-        emojis: ["crystal", "helmet", "heart"]
+        emojis: ["≡ƒìâ", "ΓÜö∩╕Å", "≡ƒîƒ"]
       }
     ];
 
@@ -795,22 +890,9 @@
     let currentSearch = "";
 
     const playerList = document.getElementById("player-list");
+    const headerSearch = document.getElementById("headerSearch");
     const mainSearch = document.getElementById("mainSearch");
     const filterButtons = document.querySelectorAll(".filter-btn");
-
-    function getGamemodeIcon(category) {
-      const icons = {
-        'Sword': '/images/sword.svg',
-        'Axe': '/images/axe.svg',
-        'Mace': '/images/mace.svg',
-        'Vanilla': '/images/vanilla.svg',
-        'UHC': '/images/uhc.svg',
-        'Pot': '/images/pot.svg',
-        'NethOP': '/images/nethop.svg',
-        'SMP': '/images/smp.svg'
-      };
-      return icons[category] || '/images/sword.svg';
-    }
 
     function getRankClass(rank) {
       if (rank === 1) return "rank-1";
@@ -847,16 +929,18 @@
         const rank = index + 1;
         const rankClass = getRankClass(rank);
 
-        const tiersHtml = player.tiers.map(t => {
-          const gamemodeIcon = getGamemodeIcon(t.category);
-          return `
+        const tiersHtml = player.tiers.map(t => `
           <div class="tier-badge">
-            <img class="gamemode-icon" src="${gamemodeIcon}" alt="${t.category}">
+            <svg class="sword-icon" viewBox="0 0 24 24" fill="none" stroke="#ffaa44" stroke-width="2">
+              <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+              <path d="M13 19l6-6"/>
+              <path d="M16 16l4 4"/>
+              <path d="M19 21l2-2"/>
+            </svg>
             <span class="ht ${getTierClass(t.label)}">${t.label}</span>
             <span class="pts">${t.points}pts</span>
           </div>
-        `;
-        }).join("");
+        `).join("");
 
         return `
           <div class="player-row" data-name="${player.name}" onclick="openPlayerModal('${player.name}', ${rank})">
@@ -889,11 +973,16 @@
       });
     });
 
-    // Search
-    mainSearch.addEventListener("input", (e) => {
-      currentSearch = e.target.value.trim();
+    // Search (both inputs stay in sync)
+    function handleSearch(value) {
+      currentSearch = value.trim();
+      headerSearch.value = currentSearch;
+      mainSearch.value = currentSearch;
       renderPlayers();
-    });
+    }
+
+    headerSearch.addEventListener("input", (e) => handleSearch(e.target.value));
+    mainSearch.addEventListener("input", (e) => handleSearch(e.target.value));
 
     // Player Modal Functions
     function openPlayerModal(playerName, rank) {
@@ -907,33 +996,29 @@
       document.getElementById('modalTotalPoints').textContent = player.total;
       document.getElementById('modalHighestTier').textContent = player.highest;
 
-      // Update emojis - use the PNG images
+      // Update emojis
       const emojiContainer = document.getElementById('modalEmojis');
-      const defaultEmojis = [
-        '<img src="/images/crystal.png" class="emoji-item" alt="crystal">',
-        '<img src="/images/helmet.png" class="emoji-item" alt="helmet">',
-        '<img src="/images/heart.png" class="emoji-item" alt="heart">',
-        '<img src="/images/pickaxe.png" class="emoji-item" alt="pickaxe">',
-        '<img src="/images/bow.png" class="emoji-item" alt="bow">'
-      ];
+      const defaultEmojis = ["ΓÜö∩╕Å", "≡ƒÅå", "≡ƒææ", "≡ƒöÑ", "≡ƒÆÄ"];
       const playerEmojis = player.emojis || defaultEmojis;
-      emojiContainer.innerHTML = playerEmojis.map(emoji =>
+      emojiContainer.innerHTML = playerEmojis.map(emoji => 
         `<span class="emoji-item">${emoji}</span>`
       ).join('');
 
       // Update tier list
       const tierList = document.getElementById('modalTierList');
-      tierList.innerHTML = player.tiers.map(t => {
-        const gamemodeIcon = getGamemodeIcon(t.category);
-        return `
+      tierList.innerHTML = player.tiers.map(t => `
         <div class="tier-badge">
-          <img class="gamemode-icon" src="${gamemodeIcon}" alt="${t.category}">
+          <svg class="sword-icon" viewBox="0 0 24 24" fill="none" stroke="#ffaa44" stroke-width="2">
+            <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+            <path d="M13 19l6-6"/>
+            <path d="M16 16l4 4"/>
+            <path d="M19 21l2-2"/>
+          </svg>
           <span class="ht ${getTierClass(t.label)}">${t.label}</span>
           <span class="pts">${t.points}pts</span>
           <span style="color: #8a8aa0; font-size: 0.75rem; margin-left: 8px;">${t.category}</span>
         </div>
-      `;
-      }).join('');
+      `).join('');
 
       // Show modal
       document.getElementById('playerModal').classList.add('active');
