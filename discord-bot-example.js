@@ -5,6 +5,7 @@ const axios = require('axios');
 const TOKEN = process.env.DISCORD_TOKEN;
 const API_URL = 'http://localhost:3000/api/discord/update';
 const API_KEY = process.env.DISCORD_BOT_API_KEY || 'leaf-tiers-secret-key-2024';
+const GUILD_ID = process.env.DISCORD_GUILD_ID;
 
 if (!TOKEN) {
     console.error('DISCORD_TOKEN environment variable is required');
@@ -96,11 +97,21 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
         if (!CLIENT_ID) {
             console.warn('DISCORD_CLIENT_ID not set. Commands will not be registered.');
         } else {
-            await rest.put(
-                Routes.applicationCommands(CLIENT_ID),
-                { body: commands }
-            );
-            console.log('Successfully reloaded application (/) commands.');
+            // If guild ID is provided, register guild commands (instant)
+            // Otherwise register global commands (can take up to an hour)
+            if (GUILD_ID) {
+                await rest.put(
+                    Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+                    { body: commands }
+                );
+                console.log('Successfully reloaded guild (/) commands.');
+            } else {
+                await rest.put(
+                    Routes.applicationCommands(CLIENT_ID),
+                    { body: commands }
+                );
+                console.log('Successfully reloaded global (/) commands (may take up to an hour to propagate).');
+            }
         }
     } catch (error) {
         console.error('Error registering commands:', error);
