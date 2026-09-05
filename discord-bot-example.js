@@ -34,55 +34,49 @@ const client = new Client({
 // Register slash commands
 const commands = [
     new SlashCommandBuilder()
-        .setName('results')
+        .setName('result')
         .setDescription('Update a player\'s tier on the website')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('Discord user')
+                .setRequired(true))
         .addStringOption(option =>
-            option.setName('ign')
+            option.setName('username')
                 .setDescription('Minecraft username')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('tier')
-                .setDescription('Tier (e.g., HT1, MT1, LT1)')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'HT1', value: 'HT1' },
-                    { name: 'MT1', value: 'MT1' },
-                    { name: 'LT1', value: 'LT1' },
-                    { name: 'HT2', value: 'HT2' },
-                    { name: 'MT2', value: 'MT2' },
-                    { name: 'LT2', value: 'LT2' },
-                    { name: 'HT3', value: 'HT3' },
-                    { name: 'MT3', value: 'MT3' },
-                    { name: 'LT3', value: 'LT3' },
-                    { name: 'HT4', value: 'HT4' },
-                    { name: 'MT4', value: 'MT4' },
-                    { name: 'HT5', value: 'HT5' },
-                    { name: 'LT5', value: 'LT5' }
-                ))
-        .addStringOption(option =>
-            option.setName('gamemode')
-                .setDescription('Gamemode')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Sword', value: 'Sword' },
-                    { name: 'Axe', value: 'Axe' },
-                    { name: 'Mace', value: 'Mace' },
-                    { name: 'Vanilla', value: 'Vanilla' },
-                    { name: 'UHC', value: 'UHC' },
-                    { name: 'Pot', value: 'Pot' },
-                    { name: 'NethOP', value: 'NethOP' },
-                    { name: 'SMP', value: 'SMP' }
-                ))
-        .addStringOption(option =>
             option.setName('region')
                 .setDescription('Region')
-                .setRequired(false)
+                .setRequired(true)
                 .addChoices(
                     { name: 'NA', value: 'NA' },
                     { name: 'EU', value: 'EU' },
                     { name: 'ASIA', value: 'ASIA' },
                     { name: 'SA', value: 'SA' },
                     { name: 'OC', value: 'OC' }
+                ))
+        .addStringOption(option =>
+            option.setName('previous_rank')
+                .setDescription('Previous rank')
+                .setRequired(false))
+        .addStringOption(option =>
+            option.setName('tier')
+                .setDescription('Tier (e.g., High Tier 1, Mid Tier 1, Low Tier 1)')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'High Tier 1', value: 'HT1' },
+                    { name: 'Mid Tier 1', value: 'MT1' },
+                    { name: 'Low Tier 1', value: 'LT1' },
+                    { name: 'High Tier 2', value: 'HT2' },
+                    { name: 'Mid Tier 2', value: 'MT2' },
+                    { name: 'Low Tier 2', value: 'LT2' },
+                    { name: 'High Tier 3', value: 'HT3' },
+                    { name: 'Mid Tier 3', value: 'MT3' },
+                    { name: 'Low Tier 3', value: 'LT3' },
+                    { name: 'High Tier 4', value: 'HT4' },
+                    { name: 'Mid Tier 4', value: 'MT4' },
+                    { name: 'High Tier 5', value: 'HT5' },
+                    { name: 'Low Tier 5', value: 'LT5' }
                 ))
 ].map(command => command.toJSON());
 
@@ -122,21 +116,25 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === 'results') {
-        const ign = interaction.options.getString('ign');
+    if (interaction.commandName === 'result') {
+        const user = interaction.options.getUser('user');
+        const username = interaction.options.getString('username');
+        const region = interaction.options.getString('region');
+        const previousRank = interaction.options.getString('previous_rank');
         const tier = interaction.options.getString('tier');
-        const gamemode = interaction.options.getString('gamemode');
-        const region = interaction.options.getString('region') || 'NA';
+        
+        // Default gamemode to Sword since it's not in the command
+        const gamemode = 'Sword';
         const points = pointsForTier(tier);
 
         try {
             const response = await axios.post(API_URL, {
-                username: ign,
+                username: username,
                 tier: tier,
                 points: points,
                 gamemode: gamemode,
                 region: region,
-                user: interaction.user.username
+                user: user.username
             }, {
                 headers: {
                     'Authorization': `Bearer ${API_KEY}`,
@@ -146,7 +144,7 @@ client.on('interactionCreate', async interaction => {
 
             if (response.data.success) {
                 await interaction.reply({
-                    content: `✅ Successfully updated ${ign} to ${tier} (${points}pts) in ${gamemode} on the website!`,
+                    content: `✅ Successfully updated ${username} to ${tier} (${points}pts) in ${gamemode} on the website!`,
                     ephemeral: true
                 });
             } else {
