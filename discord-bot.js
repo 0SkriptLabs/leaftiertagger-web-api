@@ -1,5 +1,5 @@
 // Discord Bot for LeafTiers Website Integration
-// This bot listens for /results command and updates the website
+// This bot listens for /result command and updates the website
 
 const { Client, GatewayIntentBits, SlashCommandBuilder, REST, Routes } = require('discord.js');
 require('dotenv').config();
@@ -11,65 +11,67 @@ const client = new Client({
     ]
 });
 
-const WEBSITE_URL = process.env.WEBSITE_URL || 'http://localhost:3000';
+const WEBSITE_URL = process.env.WEBSITE_URL || 'https://srv-dadgkt740ujc73e89g1g.onrender.com';
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const WEBSITE_BOT_TOKEN = process.env.WEBSITE_BOT_TOKEN;
+const API_KEY = process.env.DISCORD_BOT_API_KEY || 'leaf-tiers-secret-key-2024';
+
+// Points calculation based on tier
+function pointsForTier(tier) {
+    const tierPoints = {
+        'HT1': 45, 'MT1': 35, 'LT1': 25,
+        'HT2': 20, 'MT2': 15, 'LT2': 10,
+        'HT3': 8, 'MT3': 6, 'LT3': 4,
+        'HT4': 3, 'MT4': 2, 'HT5': 1, 'LT5': 0
+    };
+    return tierPoints[tier] || 0;
+}
 
 // Register slash command
 const commands = [
     new SlashCommandBuilder()
-        .setName('results')
+        .setName('result')
         .setDescription('Update player tier on the website')
-        .addStringOption(option =>
+        .addUserOption(option =>
             option.setName('user')
-                .setDescription('Discord username')
+                .setDescription('Discord user')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('ign')
-                .setDescription('Minecraft IGN')
+            option.setName('username')
+                .setDescription('Minecraft username')
                 .setRequired(true))
-        .addStringOption(option =>
-            option.setName('tier')
-                .setDescription('Tier (e.g., HT1, MT1, LT1, HT2, etc.)')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'HT1', value: 'HT1' },
-                    { name: 'MT1', value: 'MT1' },
-                    { name: 'LT1', value: 'LT1' },
-                    { name: 'HT2', value: 'HT2' },
-                    { name: 'MT2', value: 'MT2' },
-                    { name: 'LT2', value: 'LT2' },
-                    { name: 'HT3', value: 'HT3' },
-                    { name: 'MT3', value: 'MT3' },
-                    { name: 'LT3', value: 'LT3' },
-                    { name: 'HT4', value: 'HT4' },
-                    { name: 'MT4', value: 'MT4' },
-                    { name: 'HT5', value: 'HT5' },
-                    { name: 'LT5', value: 'LT5' }
-                ))
-        .addStringOption(option =>
-            option.setName('gamemode')
-                .setDescription('Gamemode')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Sword', value: 'Sword' },
-                    { name: 'Axe', value: 'Axe' },
-                    { name: 'Mace', value: 'Mace' },
-                    { name: 'Vanilla', value: 'Vanilla' },
-                    { name: 'UHC', value: 'UHC' },
-                    { name: 'Pot', value: 'Pot' },
-                    { name: 'NethOP', value: 'NethOP' },
-                    { name: 'SMP', value: 'SMP' }
-                ))
         .addStringOption(option =>
             option.setName('region')
-                .setDescription('Region (default: NA)')
-                .setRequired(false)
+                .setDescription('Region')
+                .setRequired(true)
                 .addChoices(
                     { name: 'NA', value: 'NA' },
                     { name: 'EU', value: 'EU' },
-                    { name: 'AS', value: 'AS' },
-                    { name: 'SA', value: 'SA' }
+                    { name: 'ASIA', value: 'ASIA' },
+                    { name: 'SA', value: 'SA' },
+                    { name: 'OC', value: 'OC' }
+                ))
+        .addStringOption(option =>
+            option.setName('previous_rank')
+                .setDescription('Previous rank')
+                .setRequired(false))
+        .addStringOption(option =>
+            option.setName('tier')
+                .setDescription('Tier')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'High Tier 1', value: 'HT1' },
+                    { name: 'Mid Tier 1', value: 'MT1' },
+                    { name: 'Low Tier 1', value: 'LT1' },
+                    { name: 'High Tier 2', value: 'HT2' },
+                    { name: 'Mid Tier 2', value: 'MT2' },
+                    { name: 'Low Tier 2', value: 'LT2' },
+                    { name: 'High Tier 3', value: 'HT3' },
+                    { name: 'Mid Tier 3', value: 'MT3' },
+                    { name: 'Low Tier 3', value: 'LT3' },
+                    { name: 'High Tier 4', value: 'HT4' },
+                    { name: 'Mid Tier 4', value: 'MT4' },
+                    { name: 'High Tier 5', value: 'HT5' },
+                    { name: 'Low Tier 5', value: 'LT5' }
                 ))
 ].map(command => command.toJSON());
 
@@ -80,12 +82,20 @@ async function registerCommands() {
     try {
         console.log('Started refreshing application (/) commands.');
 
-        await rest.put(
-            Routes.applicationCommands(process.env.CLIENT_ID),
-            { body: commands }
-        );
-
-        console.log('Successfully reloaded application (/) commands.');
+        const GUILD_ID = process.env.DISCORD_GUILD_ID;
+        if (GUILD_ID) {
+            await rest.put(
+                Routes.applicationGuildCommands(process.env.CLIENT_ID, GUILD_ID),
+                { body: commands }
+            );
+            console.log('Successfully reloaded guild (/) commands.');
+        } else {
+            await rest.put(
+                Routes.applicationCommands(process.env.CLIENT_ID),
+                { body: commands }
+            );
+            console.log('Successfully reloaded global (/) commands.');
+        }
     } catch (error) {
         console.error(error);
     }
@@ -99,12 +109,16 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === 'results') {
-        const user = interaction.options.getString('user');
-        const ign = interaction.options.getString('ign');
+    if (interaction.commandName === 'result') {
+        const user = interaction.options.getUser('user');
+        const username = interaction.options.getString('username');
+        const region = interaction.options.getString('region');
+        const previousRank = interaction.options.getString('previous_rank');
         const tier = interaction.options.getString('tier');
-        const gamemode = interaction.options.getString('gamemode');
-        const region = interaction.options.getString('region') || 'NA';
+        
+        // Default gamemode to Sword
+        const gamemode = 'Sword';
+        const points = pointsForTier(tier);
 
         await interaction.deferReply();
 
@@ -112,15 +126,16 @@ client.on('interactionCreate', async interaction => {
             const response = await fetch(`${WEBSITE_URL}/api/discord/update`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
                 },
                 body: JSON.stringify({
-                    bot_token: WEBSITE_BOT_TOKEN,
-                    user,
-                    ign,
-                    tier,
-                    gamemode,
-                    region
+                    username: username,
+                    tier: tier,
+                    points: points,
+                    gamemode: gamemode,
+                    region: region,
+                    user: user.username
                 })
             });
 
@@ -128,7 +143,7 @@ client.on('interactionCreate', async interaction => {
 
             if (result.success) {
                 await interaction.editReply({
-                    content: `✅ Successfully updated ${ign} to ${tier} in ${gamemode}!`,
+                    content: `✅ Successfully updated ${username} to ${tier} (${points}pts) in ${gamemode}!`,
                     ephemeral: false
                 });
             } else {
