@@ -7,6 +7,46 @@
           "points": 0
         }
       }
+    },
+    "2p41": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "HT2",
+          "points": 0
+        }
+      }
+    },
+    "xa67": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "LT5",
+          "points": 0
+        }
+      }
+    },
+    "chiffon_0": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "HT3",
+          "points": 0
+        }
+      }
+    },
+    "mz0k": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "HT3",
+          "points": 0
+        }
+      }
+    },
+    "skateboardkayden": {
+      "gamemodes": {
+        "Crystal": {
+          "tier": "HT5",
+          "points": 0
+        }
+      }
     }
   }
 }
