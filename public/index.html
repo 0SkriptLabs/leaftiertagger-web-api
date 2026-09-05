@@ -168,8 +168,8 @@
     }
 
     .filter-btn {
-      background-color: #00ff88;
-      color: #1a1a2e;
+      background-color: #3b82f6;
+      color: white;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
@@ -186,11 +186,11 @@
     }
 
     .filter-btn:hover {
-      background-color: #00cc6a;
+      background-color: #2563eb;
     }
 
     .filter-btn.active {
-      background-color: #5a8cff;
+      background-color: #1d4ed8;
       color: white;
     }
 
@@ -717,11 +717,13 @@
                 category: gamemode
               });
               
-              // Update highest tier based on points
-              if (points >= 45) highestTier = 'HT1';
-              else if (points >= 35 && highestTier !== 'HT1') highestTier = 'MT1';
-              else if (points >= 25 && highestTier !== 'HT1' && highestTier !== 'MT1') highestTier = 'LT1';
-              else if (points >= 20 && highestTier !== 'HT1' && highestTier !== 'MT1' && highestTier !== 'LT1') highestTier = 'HT2';
+              // Update highest tier based on points (HT1 best, LT5 worst)
+              const tierOrder = ['HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'MT4', 'HT5', 'LT5'];
+              const currentIndex = tierOrder.indexOf(highestTier);
+              const newTierIndex = tierOrder.indexOf(tier);
+              if (newTierIndex < currentIndex) {
+                highestTier = tier;
+              }
             });
             
             players.push({

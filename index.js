@@ -1927,6 +1927,49 @@ const resultCommand =
           .addChoices(
             ...tierChoices
           )
+    )
+    .addStringOption(
+      option =>
+        option
+          .setName("gamemode")
+          .setDescription(
+            "Gamemode"
+          )
+          .setRequired(true)
+          .addChoices(
+            {
+              name: "Sword",
+              value: "Sword"
+            },
+            {
+              name: "Axe",
+              value: "Axe"
+            },
+            {
+              name: "Mace",
+              value: "Mace"
+            },
+            {
+              name: "Vanilla",
+              value: "Vanilla"
+            },
+            {
+              name: "UHC",
+              value: "UHC"
+            },
+            {
+              name: "Pot",
+              value: "Pot"
+            },
+            {
+              name: "NethOP",
+              value: "NethOP"
+            },
+            {
+              name: "SMP",
+              value: "SMP"
+            }
+          )
     );
 
 const unverifyCommand =
@@ -3449,6 +3492,12 @@ if (
               "tier"
             );
 
+        const gamemode =
+          interaction.options
+            .getString(
+              "gamemode"
+            );
+
         await updateTierRole(
           interaction.guild,
           user.id,
@@ -3457,7 +3506,6 @@ if (
 
         try {
           const points = pointsForTier(tier);
-          const gamemode = 'Sword';
           
           const websiteResponse = await fetch(`${WEBSITE_URL}/api/discord/update`, {
             method: 'POST',
