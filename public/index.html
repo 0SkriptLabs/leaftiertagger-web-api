@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -708,64 +708,160 @@
     const mainSearch = document.getElementById("mainSearch");
     const filterButtons = document.querySelectorAll(".filter-btn");
 
-    // Load players from API
-    async function loadPlayersFromAPI() {
+    // =========================
+    // PERSISTENT PLAYER DATA
+    // =========================
+    //
+    // Loading order:
+    // 1. /api/tiers   - your live backend
+    // 2. /tiers.json  - tiers.json served with the website
+    // 3. localStorage - last good copy saved in this browser
+    //
+    // This prevents a normal page reload from wiping the visible list
+    // just because the API temporarily returns nothing.
+
+    const TIER_CACHE_KEY = "leaftiers_saved_tiers";
+
+    function hasPlayers(data) {
+      return !!(
+        data &&
+        data.players &&
+        typeof data.players === "object" &&
+        Object.keys(data.players).length > 0
+      );
+    }
+
+    function saveTierCache(data) {
+      if (!hasPlayers(data)) return;
+
       try {
-        const response = await fetch('/api/tiers');
-        const data = await response.json();
-        
-        // Convert API data to player format
-        players = [];
-        
-        if (data.players) {
-          Object.keys(data.players).forEach(username => {
-            const playerData = data.players[username];
-            const gamemodes = playerData.gamemodes || {};
-            
-            // Calculate total points and find highest tier
-            let totalPoints = 0;
-            let highestTier = 'LT5';
-            let categories = [];
-            let tiers = [];
-            
-            Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
-              const points = tierData.points || 0;
-              const tier = tierData.tier || 'LT5';
-              
-              totalPoints += points;
-              categories.push(gamemode);
-              tiers.push({
-                label: tier,
-                points: points,
-                category: gamemode
-              });
-              
-              // Update highest tier based on points (HT1 best, LT5 worst)
-              const tierOrder = ['HT1', 'MT1', 'LT1', 'HT2', 'MT2', 'LT2', 'HT3', 'MT3', 'LT3', 'HT4', 'MT4', 'HT5', 'MT5', 'LT5'];
-              const currentIndex = tierOrder.indexOf(highestTier);
-              const newTierIndex = tierOrder.indexOf(tier);
-              if (newTierIndex < currentIndex) {
-                highestTier = tier;
-              }
-            });
-            
-            players.push({
-              name: username,
-              highest: highestTier,
-              total: totalPoints,
-              categories: categories,
-              tiers: tiers,
-              emojis: ["crystal", "helmet", "heart"]
-            });
-          });
-        }
-        
-        renderPlayers();
+        localStorage.setItem(TIER_CACHE_KEY, JSON.stringify(data));
       } catch (error) {
-        console.error('Error loading players:', error);
-        players = [];
-        renderPlayers();
+        console.warn("Could not save tier cache:", error);
       }
+    }
+
+    function loadTierCache() {
+      try {
+        const saved = localStorage.getItem(TIER_CACHE_KEY);
+        if (!saved) return null;
+
+        const parsed = JSON.parse(saved);
+        return hasPlayers(parsed) ? parsed : null;
+      } catch (error) {
+        console.warn("Could not read tier cache:", error);
+        return null;
+      }
+    }
+
+    async function fetchJson(url) {
+      try {
+        const response = await fetch(url, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} returned HTTP ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.warn(`Could not load ${url}:`, error);
+        return null;
+      }
+    }
+
+    function applyTierData(data) {
+      players = [];
+
+      if (!data || !data.players) {
+        renderPlayers();
+        return;
+      }
+
+      Object.keys(data.players).forEach(username => {
+        const playerData = data.players[username];
+        const gamemodes = playerData.gamemodes || {};
+
+        let totalPoints = 0;
+        let highestTier = "LT5";
+        let categories = [];
+        let tiers = [];
+
+        Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
+          const points = tierData.points || 0;
+          const tier = (tierData.tier || "LT5").toUpperCase();
+
+          totalPoints += points;
+          categories.push(gamemode);
+
+          tiers.push({
+            label: tier,
+            points: points,
+            category: gamemode
+          });
+
+          // Best -> worst
+          const tierOrder = [
+            "HT1", "MT1", "LT1",
+            "HT2", "MT2", "LT2",
+            "HT3", "MT3", "LT3",
+            "HT4", "MT4", "LT4",
+            "HT5", "MT5", "LT5"
+          ];
+
+          const currentIndex = tierOrder.indexOf(highestTier);
+          const newTierIndex = tierOrder.indexOf(tier);
+
+          if (newTierIndex !== -1 && (currentIndex === -1 || newTierIndex < currentIndex)) {
+            highestTier = tier;
+          }
+        });
+
+        players.push({
+          name: username,
+          highest: highestTier,
+          total: totalPoints,
+          categories: categories,
+          tiers: tiers,
+          emojis: ["crystal", "helmet", "heart"]
+        });
+      });
+
+      renderPlayers();
+    }
+
+    async function loadPlayersFromAPI() {
+      // 1) Try the live API first.
+      const apiData = await fetchJson("/api/tiers");
+
+      if (hasPlayers(apiData)) {
+        saveTierCache(apiData);
+        applyTierData(apiData);
+        return;
+      }
+
+      // 2) If API is unavailable/empty, try the tiers.json file in your site/repo.
+      const jsonData = await fetchJson("/tiers.json");
+
+      if (hasPlayers(jsonData)) {
+        saveTierCache(jsonData);
+        applyTierData(jsonData);
+        return;
+      }
+
+      // 3) Last resort: use the most recent good copy saved in this browser.
+      const cachedData = loadTierCache();
+
+      if (cachedData) {
+        console.log("Loaded players from local saved cache.");
+        applyTierData(cachedData);
+        return;
+      }
+
+      // Nothing could be loaded.
+      players = [];
+      renderPlayers();
     }
 
     function getGamemodeIcon(category) {
@@ -791,9 +887,14 @@
 
     function getTierClass(label) {
       const upper = label.toUpperCase();
+
       if (upper === "HT1") return "ht-ht1";
       if (upper === "HT2") return "ht-ht2";
       if (upper === "HT3") return "ht-ht3";
+      if (upper === "LT3") return "ht-lt3";
+      if (upper === "HT4") return "ht-ht4";
+      if (upper === "LT4") return "ht-lt4";
+
       return "ht-other";
     }
 
@@ -922,9 +1023,14 @@
     const ws = new WebSocket(`${wsProtocol}//${window.location.host}`);
     
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'update') {
-        loadPlayersFromAPI();
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "update") {
+          loadPlayersFromAPI();
+        }
+      } catch (error) {
+        console.warn("Ignored invalid WebSocket message:", error);
       }
     };
     
