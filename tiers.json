@@ -2,7 +2,7 @@
   "players": {
     "edgemainn": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "LT3",
           "points": 6
         }
@@ -10,7 +10,7 @@
     },
     "2p41": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "HT2",
           "points": 30
         }
@@ -18,7 +18,7 @@
     },
     "xa67": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "LT5",
           "points": 1
         }
@@ -26,7 +26,7 @@
     },
     "chiffon_0": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "HT3",
           "points": 10
         }
@@ -34,7 +34,7 @@
     },
     "mz0k": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "HT3",
           "points": 10
         }
@@ -42,7 +42,7 @@
     },
     "skateboardkayden": {
       "gamemodes": {
-        "Crystal": {
+        "Vanilla": {
           "tier": "HT5",
           "points": 2
         }
