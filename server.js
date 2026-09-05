@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Discord Bot API Key (should be set as environment variable)
-const DISCORD_BOT_API_KEY = process.env.DISCORD_BOT_API_KEY || 'your-discord-bot-api-key-here';
+const DISCORD_BOT_API_KEY = process.env.DISCORD_BOT_API_KEY || 'leaf-tiers-secret-key-2024';
 
 // Data file
 const DATA_FILE = path.join(__dirname, 'tiers.json');
