@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a2f1a 0%, #2d4a2d 50%, #1a2f1a 100%);
+            background: linear-gradient(180deg, #0a1a0a 0%, #1a3a1a 30%, #2d5a2d 60%, #1a3a1a 100%);
             color: #fff;
             min-height: 100vh;
             position: relative;
@@ -21,39 +21,78 @@
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="%2332cd32" d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg>') 16 16, auto;
         }
 
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(34, 139, 34, 0.4) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(50, 205, 50, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(107, 142, 35, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 30% 70%, rgba(85, 107, 47, 0.4) 0%, transparent 35%),
+                radial-gradient(circle at 70% 30%, rgba(143, 188, 143, 0.3) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         /* Animated leaves */
         .leaf {
             position: fixed;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
-            border-radius: 0 50% 50% 50%;
-            opacity: 0.4;
+            border-radius: 50% 0 50% 0;
+            opacity: 0.5;
             animation: fall linear infinite;
             z-index: 0;
             pointer-events: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .leaf:nth-child(1) { left: 5%; animation-duration: 8s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); }
-        .leaf:nth-child(2) { left: 10%; animation-duration: 12s; animation-delay: 2s; background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%); }
-        .leaf:nth-child(3) { left: 15%; animation-duration: 10s; animation-delay: 4s; background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%); }
-        .leaf:nth-child(4) { left: 20%; animation-duration: 14s; animation-delay: 1s; background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%); }
-        .leaf:nth-child(5) { left: 25%; animation-duration: 9s; animation-delay: 3s; background: linear-gradient(135deg, #9acd32 0%, #6b8e23 100%); }
-        .leaf:nth-child(6) { left: 30%; animation-duration: 11s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); }
-        .leaf:nth-child(7) { left: 35%; animation-duration: 13s; animation-delay: 2s; background: linear-gradient(135deg, #d2691e 0%, #8b4513 100%); }
-        .leaf:nth-child(8) { left: 40%; animation-duration: 10s; animation-delay: 4s; background: linear-gradient(135deg, #ff8c00 0%, #ff6347 100%); }
-        .leaf:nth-child(9) { left: 45%; animation-duration: 8s; animation-delay: 1s; background: linear-gradient(135deg, #9acd32 0%, #556b2f 100%); }
-        .leaf:nth-child(10) { left: 50%; animation-duration: 12s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #228b22 100%); }
-        .leaf:nth-child(11) { left: 55%; animation-duration: 9s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); }
-        .leaf:nth-child(12) { left: 60%; animation-duration: 11s; animation-delay: 2s; background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%); }
-        .leaf:nth-child(13) { left: 65%; animation-duration: 14s; animation-delay: 4s; background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%); }
-        .leaf:nth-child(14) { left: 70%; animation-duration: 10s; animation-delay: 1s; background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%); }
-        .leaf:nth-child(15) { left: 75%; animation-duration: 8s; animation-delay: 3s; background: linear-gradient(135deg, #9acd32 0%, #6b8e23 100%); }
-        .leaf:nth-child(16) { left: 80%; animation-duration: 13s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); }
-        .leaf:nth-child(17) { left: 85%; animation-duration: 11s; animation-delay: 2s; background: linear-gradient(135deg, #d2691e 0%, #8b4513 100%); }
-        .leaf:nth-child(18) { left: 90%; animation-duration: 9s; animation-delay: 4s; background: linear-gradient(135deg, #ff8c00 0%, #ff6347 100%); }
-        .leaf:nth-child(19) { left: 95%; animation-duration: 12s; animation-delay: 1s; background: linear-gradient(135deg, #9acd32 0%, #556b2f 100%); }
-        .leaf:nth-child(20) { left: 98%; animation-duration: 10s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #228b22 100%); }
+        .leaf::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 60%;
+            background: rgba(0, 100, 0, 0.5);
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .leaf:nth-child(1) { left: 3%; animation-duration: 12s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); transform: scale(0.8); }
+        .leaf:nth-child(2) { left: 8%; animation-duration: 15s; animation-delay: 2s; background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%); transform: scale(1.1); }
+        .leaf:nth-child(3) { left: 13%; animation-duration: 10s; animation-delay: 4s; background: linear-gradient(135deg, #006400 0%, #228b22 100%); transform: scale(0.9); }
+        .leaf:nth-child(4) { left: 18%; animation-duration: 18s; animation-delay: 1s; background: linear-gradient(135deg, #32cd32 0%, #90ee90 100%); transform: scale(1.2); }
+        .leaf:nth-child(5) { left: 23%; animation-duration: 11s; animation-delay: 3s; background: linear-gradient(135deg, #3cb371 0%, #66cdaa 100%); transform: scale(0.7); }
+        .leaf:nth-child(6) { left: 28%; animation-duration: 14s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); transform: scale(1.0); }
+        .leaf:nth-child(7) { left: 33%; animation-duration: 16s; animation-delay: 2s; background: linear-gradient(135deg, #2e8b57 0%, #32cd32 100%); transform: scale(0.85); }
+        .leaf:nth-child(8) { left: 38%; animation-duration: 13s; animation-delay: 4s; background: linear-gradient(135deg, #3cb371 0%, #98fb98 100%); transform: scale(1.15); }
+        .leaf:nth-child(9) { left: 43%; animation-duration: 10s; animation-delay: 1s; background: linear-gradient(135deg, #006400 0%, #2e8b57 100%); transform: scale(0.95); }
+        .leaf:nth-child(10) { left: 48%; animation-duration: 15s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #3cb371 100%); transform: scale(1.05); }
+        .leaf:nth-child(11) { left: 53%; animation-duration: 12s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #66cdaa 100%); transform: scale(0.8); }
+        .leaf:nth-child(12) { left: 58%; animation-duration: 17s; animation-delay: 2s; background: linear-gradient(135deg, #2e8b57 0%, #90ee90 100%); transform: scale(1.1); }
+        .leaf:nth-child(13) { left: 63%; animation-duration: 11s; animation-delay: 4s; background: linear-gradient(135deg, #006400 0%, #32cd32 100%); transform: scale(0.9); }
+        .leaf:nth-child(14) { left: 68%; animation-duration: 14s; animation-delay: 1s; background: linear-gradient(135deg, #3cb371 0%, #2e8b57 100%); transform: scale(1.2); }
+        .leaf:nth-child(15) { left: 73%; animation-duration: 10s; animation-delay: 3s; background: linear-gradient(135deg, #228b22 0%, #98fb98 100%); transform: scale(0.75); }
+        .leaf:nth-child(16) { left: 78%; animation-duration: 16s; animation-delay: 5s; background: linear-gradient(135deg, #32cd32 0%, #006400 100%); transform: scale(1.0); }
+        .leaf:nth-child(17) { left: 83%; animation-duration: 13s; animation-delay: 2s; background: linear-gradient(135deg, #2e8b57 0%, #66cdaa 100%); transform: scale(0.85); }
+        .leaf:nth-child(18) { left: 88%; animation-duration: 11s; animation-delay: 4s; background: linear-gradient(135deg, #3cb371 0%, #90ee90 100%); transform: scale(1.15); }
+        .leaf:nth-child(19) { left: 93%; animation-duration: 15s; animation-delay: 1s; background: linear-gradient(135deg, #006400 0%, #3cb371 100%); transform: scale(0.95); }
+        .leaf:nth-child(20) { left: 98%; animation-duration: 12s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #98fb98 100%); transform: scale(1.05); }
+        .leaf:nth-child(21) { left: 5%; animation-duration: 14s; animation-delay: 6s; background: linear-gradient(135deg, #228b22 0%, #2e8b57 100%); transform: scale(0.8); }
+        .leaf:nth-child(22) { left: 15%; animation-duration: 16s; animation-delay: 8s; background: linear-gradient(135deg, #3cb371 0%, #32cd32 100%); transform: scale(1.1); }
+        .leaf:nth-child(23) { left: 25%; animation-duration: 11s; animation-delay: 10s; background: linear-gradient(135deg, #006400 0%, #66cdaa 100%); transform: scale(0.9); }
+        .leaf:nth-child(24) { left: 35%; animation-duration: 18s; animation-delay: 12s; background: linear-gradient(135deg, #2e8b57 0%, #90ee90 100%); transform: scale(1.2); }
+        .leaf:nth-child(25) { left: 45%; animation-duration: 13s; animation-delay: 14s; background: linear-gradient(135deg, #32cd32 0%, #98fb98 100%); transform: scale(0.7); }
+        .leaf:nth-child(26) { left: 55%; animation-duration: 15s; animation-delay: 16s; background: linear-gradient(135deg, #228b22 0%, #3cb371 100%); transform: scale(1.0); }
+        .leaf:nth-child(27) { left: 65%; animation-duration: 12s; animation-delay: 18s; background: linear-gradient(135deg, #2e8b57 0%, #66cdaa 100%); transform: scale(0.85); }
+        .leaf:nth-child(28) { left: 75%; animation-duration: 17s; animation-delay: 20s; background: linear-gradient(135deg, #3cb371 0%, #32cd32 100%); transform: scale(1.15); }
+        .leaf:nth-child(29) { left: 85%; animation-duration: 10s; animation-delay: 22s; background: linear-gradient(135deg, #006400 0%, #90ee90 100%); transform: scale(0.95); }
+        .leaf:nth-child(30) { left: 95%; animation-duration: 14s; animation-delay: 24s; background: linear-gradient(135deg, #32cd32 0%, #2e8b57 100%); transform: scale(1.05); }
 
         @keyframes fall {
             0% {
@@ -378,6 +417,15 @@
 </head>
 <body>
     <!-- Animated leaves -->
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
