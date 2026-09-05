@@ -45,10 +45,12 @@ function notifyClients() {
     const message = JSON.stringify({ type: 'update', timestamp: new Date().toISOString() });
     clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-        } catch (error) {
-            console.error('Error sending to client:', error);
-            clients.delete(client);
+            try {
+                client.send(message);
+            } catch (error) {
+                console.error('Error sending to client:', error);
+                clients.delete(client);
+            }
         }
     });
 }
