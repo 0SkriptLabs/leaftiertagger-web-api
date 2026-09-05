@@ -1,0 +1,19 @@
+{
+  "players": {
+    "edgemainn": {
+      "displayName": "edgemainn",
+      "gamemodes": {
+        "Sword": {
+          "tier": "HT3",
+          "points": 8,
+          "region": "NA"
+        },
+        "Axe": {
+          "tier": "HT3",
+          "points": 10,
+          "region": "NA"
+        }
+      }
+    }
+  }
+}

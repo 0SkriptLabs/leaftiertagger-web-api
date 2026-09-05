@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - LeafTiers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2f1a 0%, #2d4a2d 50%, #1a2f1a 100%);
+            color: #fff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="%2332cd32" d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg>') 16 16, auto;
+        }
+
+        /* Animated leaves */
+        .leaf {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
+            border-radius: 0 50% 50% 50%;
+            opacity: 0.4;
+            animation: fall linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .leaf:nth-child(1) { left: 5%; animation-duration: 8s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); }
+        .leaf:nth-child(2) { left: 10%; animation-duration: 12s; animation-delay: 2s; background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%); }
+        .leaf:nth-child(3) { left: 15%; animation-duration: 10s; animation-delay: 4s; background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%); }
+        .leaf:nth-child(4) { left: 20%; animation-duration: 14s; animation-delay: 1s; background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%); }
+        .leaf:nth-child(5) { left: 25%; animation-duration: 9s; animation-delay: 3s; background: linear-gradient(135deg, #9acd32 0%, #6b8e23 100%); }
+        .leaf:nth-child(6) { left: 30%; animation-duration: 11s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); }
+        .leaf:nth-child(7) { left: 35%; animation-duration: 13s; animation-delay: 2s; background: linear-gradient(135deg, #d2691e 0%, #8b4513 100%); }
+        .leaf:nth-child(8) { left: 40%; animation-duration: 10s; animation-delay: 4s; background: linear-gradient(135deg, #ff8c00 0%, #ff6347 100%); }
+        .leaf:nth-child(9) { left: 45%; animation-duration: 8s; animation-delay: 1s; background: linear-gradient(135deg, #9acd32 0%, #556b2f 100%); }
+        .leaf:nth-child(10) { left: 50%; animation-duration: 12s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #228b22 100%); }
+        .leaf:nth-child(11) { left: 55%; animation-duration: 9s; animation-delay: 0s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); }
+        .leaf:nth-child(12) { left: 60%; animation-duration: 11s; animation-delay: 2s; background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%); }
+        .leaf:nth-child(13) { left: 65%; animation-duration: 14s; animation-delay: 4s; background: linear-gradient(135deg, #ff6347 0%, #ff4500 100%); }
+        .leaf:nth-child(14) { left: 70%; animation-duration: 10s; animation-delay: 1s; background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%); }
+        .leaf:nth-child(15) { left: 75%; animation-duration: 8s; animation-delay: 3s; background: linear-gradient(135deg, #9acd32 0%, #6b8e23 100%); }
+        .leaf:nth-child(16) { left: 80%; animation-duration: 13s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); }
+        .leaf:nth-child(17) { left: 85%; animation-duration: 11s; animation-delay: 2s; background: linear-gradient(135deg, #d2691e 0%, #8b4513 100%); }
+        .leaf:nth-child(18) { left: 90%; animation-duration: 9s; animation-delay: 4s; background: linear-gradient(135deg, #ff8c00 0%, #ff6347 100%); }
+        .leaf:nth-child(19) { left: 95%; animation-duration: 12s; animation-delay: 1s; background: linear-gradient(135deg, #9acd32 0%, #556b2f 100%); }
+        .leaf:nth-child(20) { left: 98%; animation-duration: 10s; animation-delay: 3s; background: linear-gradient(135deg, #32cd32 0%, #228b22 100%); }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 2rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card {
+            background: rgba(30, 50, 30, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(50, 205, 50, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        h1, h2 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .horizontal-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .form-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        select {
+            background: #000;
+        }
+
+        select option {
+            background: #000;
+            color: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #32cd32;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            background: rgba(50, 205, 50, 0.3);
+            color: #fff;
+            border: 1px solid #32cd32;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+            background: rgba(50, 205, 50, 0.5);
+        }
+
+        .delete-btn {
+            background: rgba(220, 20, 60, 0.3);
+            border-color: #dc143c;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .delete-btn:hover {
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+            background: rgba(220, 20, 60, 0.5);
+        }
+
+        .refresh-btn {
+            background: rgba(50, 205, 50, 0.3);
+            border-color: #32cd32;
+        }
+
+        .refresh-btn:hover {
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+            background: rgba(50, 205, 50, 0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(50, 205, 50, 0.2);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .tier-ht5 { background: rgba(187, 134, 252, 0.3); border-color: #bb86fc; color: #bb86fc; }
+        .tier-ht4 { background: rgba(209, 196, 233, 0.4); border-color: #d1c4e9; color: #d1c4e9; }
+        .tier-ht3 { background: rgba(184, 115, 51, 0.3); border-color: #b87333; color: #b87333; }
+        .tier-ht2 { background: rgba(255, 255, 255, 0.3); border-color: #ffffff; color: #ffffff; }
+        .tier-ht1 { background: rgba(255, 215, 0, 0.4); border-color: #ffd700; color: #ffd700; }
+        .tier-mt5 { background: rgba(216, 180, 254, 0.3); border-color: #d8b4fe; color: #d8b4fe; }
+        .tier-mt4 { background: rgba(233, 213, 255, 0.4); border-color: #e9d5ff; color: #e9d5ff; }
+        .tier-mt3 { background: rgba(184, 115, 51, 0.3); border-color: #b87333; color: #b87333; }
+        .tier-mt2 { background: rgba(255, 255, 255, 0.3); border-color: #ffffff; color: #ffffff; }
+        .tier-mt1 { background: rgba(255, 215, 0, 0.4); border-color: #ffd700; color: #ffd700; }
+        .tier-lt5 { background: rgba(147, 51, 234, 0.3); border-color: #9333ea; color: #9333ea; }
+        .tier-lt4 { background: rgba(232, 121, 249, 0.4); border-color: #e879f9; color: #e879f9; }
+        .tier-lt3 { background: rgba(160, 100, 44, 0.3); border-color: #a0642c; color: #a0642c; }
+        .tier-lt2 { background: rgba(248, 250, 252, 0.4); border-color: #f8fafc; color: #f8fafc; }
+        .tier-lt1 { background: rgba(234, 179, 8, 0.3); border-color: #eab308; color: #eab308; }
+
+        .login-screen {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .gamemode-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .gamemode-tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .gamemode-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .points-display {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .tier-guide {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .tier-guide-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tier-guide-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-editor {
+            display: grid;
+            grid-template-columns: minmax(80px, 1fr) minmax(80px, 1fr) auto;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-editor input, .player-editor select {
+            padding: 0.55rem;
+        }
+
+        .save-btn {
+            background: rgba(50, 205, 50, 0.3);
+            border-color: #32cd32;
+            color: #fff;
+            padding: 0.55rem 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .horizontal-layout { grid-template-columns: 1fr; }
+            .player-editor { grid-template-columns: 1fr; }
+            table { display: block; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated leaves -->
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+
+    <nav class="navbar">
+        <a href="/" class="logo">LeafTiers Admin</a>
+        <div class="nav-links">
+            <a href="/">Return to Site</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>Admin Authentication</h1>
+
+            <div id="loginScreen" class="login-screen">
+                <div class="form-group">
+                    <label for="password">Enter Admin Password</label>
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+                <button onclick="login()">Access Panel</button>
+            </div>
+
+            <div id="adminPanel" class="hidden">
+                <div class="horizontal-layout">
+                    <div class="form-section">
+                        <h2>Add Player Tier</h2>
+                        
+                        <div class="tier-guide">
+                            <h3 style="margin-bottom: 0.5rem; color: #fff;">Points to Tier Guide:</h3>
+                            <div class="tier-guide-item"><span>HT1:</span><span>45+ points</span></div>
+                            <div class="tier-guide-item"><span>MT1:</span><span>35-44 points</span></div>
+                            <div class="tier-guide-item"><span>LT1:</span><span>25-34 points</span></div>
+                            <div class="tier-guide-item"><span>HT2:</span><span>20-24 points</span></div>
+                            <div class="tier-guide-item"><span>MT2:</span><span>15-19 points</span></div>
+                            <div class="tier-guide-item"><span>LT2:</span><span>10-14 points</span></div>
+                            <div class="tier-guide-item"><span>HT3:</span><span>8-9 points</span></div>
+                            <div class="tier-guide-item"><span>MT3:</span><span>6-7 points</span></div>
+                            <div class="tier-guide-item"><span>LT3:</span><span>4-5 points</span></div>
+                            <div class="tier-guide-item"><span>HT4:</span><span>3 points</span></div>
+                            <div class="tier-guide-item"><span>MT4:</span><span>2 points</span></div>
+                            <div class="tier-guide-item"><span>HT5:</span><span>1 point</span></div>
+                            <div class="tier-guide-item"><span>LT5:</span><span>0 points</span></div>
+                        </div>
+
+                        <form id="tierForm">
+                            <div class="form-group">
+                                <label for="username">Minecraft Username</label>
+                                <input type="text" id="username" required placeholder="Username">
+                            </div>
+                            <div class="form-group">
+                                <label for="points">Points</label>
+                                <input type="number" id="points" required placeholder="Points (0-60+)" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="tierPreview">Tier (automatic)</label>
+                                <input type="text" id="tierPreview" value="LT5" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="gamemode">Gamemode</label>
+                                <select id="gamemode" required>
+                                    <option value="Sword">Sword</option>
+                                    <option value="Axe">Axe</option>
+                                    <option value="Mace">Mace</option>
+                                    <option value="Vanilla">Vanilla</option>
+                                    <option value="UHC">UHC</option>
+                                    <option value="Pot">Pot</option>
+                                    <option value="NethOP">NethOP</option>
+                                    <option value="SMP">SMP</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="region">Region</label>
+                                <select id="region">
+                                    <option value="NA">NA</option>
+                                    <option value="EU">EU</option>
+                                    <option value="ASIA">ASIA</option>
+                                    <option value="SA">SA</option>
+                                    <option value="OC">OC</option>
+                                </select>
+                            </div>
+                            <button type="submit">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <div class="form-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2>Manage Players</h2>
+                            <button class="refresh-btn" onclick="loadTiers()">Refresh Data</button>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-number" id="totalPlayers">0</div>
+                                <div class="stat-label">Total Players</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="totalTiers">0</div>
+                                <div class="stat-label">Total Tiers</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="multipleTierPlayers">0</div>
+                                <div class="stat-label">Multiple Tiers</div>
+                            </div>
+                        </div>
+
+                        <table id="tiersTable">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Gamemode</th>
+                                    <th>Tier / Points</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tiersBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminPassword = '';
+
+        function calculateTierFromPoints(points) {
+            const numericPoints = Math.max(0, Number(points) || 0);
+            if (numericPoints >= 45) return 'HT1';
+            if (numericPoints >= 35) return 'MT1';
+            if (numericPoints >= 25) return 'LT1';
+            if (numericPoints >= 20) return 'HT2';
+            if (numericPoints >= 15) return 'MT2';
+            if (numericPoints >= 10) return 'LT2';
+            if (numericPoints >= 8) return 'HT3';
+            if (numericPoints >= 6) return 'MT3';
+            if (numericPoints >= 4) return 'LT3';
+            if (numericPoints >= 3) return 'HT4';
+            if (numericPoints >= 2) return 'MT4';
+            if (numericPoints >= 1) return 'HT5';
+            return 'LT5';
+        }
+
+        function pointsForTier(tier) {
+            const tierPoints = {
+                'HT1': 45, 'MT1': 35, 'LT1': 25,
+                'HT2': 20, 'MT2': 15, 'LT2': 10,
+                'HT3': 8, 'MT3': 6, 'LT3': 4,
+                'HT4': 3, 'MT4': 2, 'HT5': 1, 'LT5': 0
+            };
+            return tierPoints[tier] ?? 0;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        document.getElementById('points').addEventListener('input', (e) => {
+            document.getElementById('tierPreview').value = calculateTierFromPoints(e.target.value);
+        });
+
+        document.getElementById('tierForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const points = parseInt(document.getElementById('points').value) || 0;
+            const gamemode = document.getElementById('gamemode').value;
+            const region = document.getElementById('region').value;
+
+            if (!username || !gamemode) {
+                alert('Username and gamemode are required');
+                return;
+            }
+
+            const tier = calculateTierFromPoints(points);
+
+            try {
+                const response = await fetch('/api/tiers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        tier,
+                        gamemode,
+                        region,
+                        points,
+                        password: adminPassword
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    document.getElementById('tierForm').reset();
+                    document.getElementById('tierPreview').value = 'LT5';
+                    loadTiers();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        async function login() {
+            adminPassword = document.getElementById('password').value;
+            if (!adminPassword) {
+                alert('Please enter password');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: adminPassword })
+                });
+
+                if (response.status === 401) {
+                    alert('Invalid password');
+                    return;
+                }
+
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadTiers();
+            } catch (error) {
+                alert('Login failed');
+            }
+        }
+
+        async function loadTiers() {
+            try {
+                const response = await fetch('/api/tiers/full');
+                const data = await response.json();
+                const tbody = document.getElementById('tiersBody');
+                tbody.innerHTML = '';
+
+                let totalPlayers = 0;
+                let totalTiers = 0;
+                let multipleTierPlayers = 0;
+
+                if (data.players) {
+                    Object.keys(data.players).forEach(username => {
+                        const player = data.players[username];
+                        const gamemodes = player.gamemodes || {};
+                        
+                        totalPlayers++;
+                        totalTiers += Object.keys(gamemodes).length;
+                        if (Object.keys(gamemodes).length > 1) {
+                            multipleTierPlayers++;
+                        }
+
+                        Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
+                            const points = tierData.points || 0;
+                            const tier = calculateTierFromPoints(points);
+                            const tierClass = 'tier-' + tier.toLowerCase();
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${escapeHtml(username)}</td>
+                                <td>${escapeHtml(gamemode)}</td>
+                                <td>
+                                    <span class="tier-badge ${tierClass}">${tier}</span>
+                                    <span class="points-display">${points}pts</span>
+                                </td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteTier('${escapeHtml(username)}', '${escapeHtml(gamemode)}')">Delete</button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    });
+                }
+
+                document.getElementById('totalPlayers').textContent = totalPlayers;
+                document.getElementById('totalTiers').textContent = totalTiers;
+                document.getElementById('multipleTierPlayers').textContent = multipleTierPlayers;
+            } catch (error) {
+                console.error('Error loading tiers:', error);
+            }
+        }
+
+        async function deleteTier(username, gamemode) {
+            if (!confirm(`Delete ${username} from ${gamemode}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/tiers/${encodeURIComponent(username)}?password=${encodeURIComponent(adminPassword)}&gamemode=${encodeURIComponent(gamemode)}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    loadTiers();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
