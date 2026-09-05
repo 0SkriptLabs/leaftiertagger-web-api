@@ -93,6 +93,26 @@
         .leaf:nth-child(28) { left: 75%; animation-duration: 17s; animation-delay: 20s; background: linear-gradient(135deg, #3cb371 0%, #32cd32 100%); transform: scale(1.15); }
         .leaf:nth-child(29) { left: 85%; animation-duration: 10s; animation-delay: 22s; background: linear-gradient(135deg, #006400 0%, #90ee90 100%); transform: scale(0.95); }
         .leaf:nth-child(30) { left: 95%; animation-duration: 14s; animation-delay: 24s; background: linear-gradient(135deg, #32cd32 0%, #2e8b57 100%); transform: scale(1.05); }
+        .leaf:nth-child(31) { left: 2%; animation-duration: 16s; animation-delay: 7s; background: linear-gradient(135deg, #228b22 0%, #32cd32 100%); transform: scale(0.9); }
+        .leaf:nth-child(32) { left: 12%; animation-duration: 19s; animation-delay: 9s; background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%); transform: scale(1.15); }
+        .leaf:nth-child(33) { left: 22%; animation-duration: 13s; animation-delay: 11s; background: linear-gradient(135deg, #006400 0%, #228b22 100%); transform: scale(0.8); }
+        .leaf:nth-child(34) { left: 32%; animation-duration: 17s; animation-delay: 13s; background: linear-gradient(135deg, #32cd32 0%, #90ee90 100%); transform: scale(1.25); }
+        .leaf:nth-child(35) { left: 42%; animation-duration: 14s; animation-delay: 15s; background: linear-gradient(135deg, #3cb371 0%, #66cdaa 100%); transform: scale(0.75); }
+        .leaf:nth-child(36) { left: 52%; animation-duration: 18s; animation-delay: 17s; background: linear-gradient(135deg, #228b22 0%, #006400 100%); transform: scale(1.05); }
+        .leaf:nth-child(37) { left: 62%; animation-duration: 15s; animation-delay: 19s; background: linear-gradient(135deg, #2e8b57 0%, #32cd32 100%); transform: scale(0.9); }
+        .leaf:nth-child(38) { left: 72%; animation-duration: 16s; animation-delay: 21s; background: linear-gradient(135deg, #3cb371 0%, #98fb98 100%); transform: scale(1.2); }
+        .leaf:nth-child(39) { left: 82%; animation-duration: 13s; animation-delay: 23s; background: linear-gradient(135deg, #006400 0%, #2e8b57 100%); transform: scale(0.85); }
+        .leaf:nth-child(40) { left: 92%; animation-duration: 17s; animation-delay: 25s; background: linear-gradient(135deg, #32cd32 0%, #3cb371 100%); transform: scale(1.1); }
+        .leaf:nth-child(41) { left: 7%; animation-duration: 15s; animation-delay: 5s; background: linear-gradient(135deg, #228b22 0%, #66cdaa 100%); transform: scale(0.95); }
+        .leaf:nth-child(42) { left: 17%; animation-duration: 18s; animation-delay: 7s; background: linear-gradient(135deg, #2e8b57 0%, #90ee90 100%); transform: scale(1.05); }
+        .leaf:nth-child(43) { left: 27%; animation-duration: 12s; animation-delay: 9s; background: linear-gradient(135deg, #006400 0%, #32cd32 100%); transform: scale(0.8); }
+        .leaf:nth-child(44) { left: 37%; animation-duration: 19s; animation-delay: 11s; background: linear-gradient(135deg, #3cb371 0%, #2e8b57 100%); transform: scale(1.3); }
+        .leaf:nth-child(45) { left: 47%; animation-duration: 14s; animation-delay: 13s; background: linear-gradient(135deg, #32cd32 0%, #98fb98 100%); transform: scale(0.7); }
+        .leaf:nth-child(46) { left: 57%; animation-duration: 16s; animation-delay: 15s; background: linear-gradient(135deg, #228b22 0%, #3cb371 100%); transform: scale(1.0); }
+        .leaf:nth-child(47) { left: 67%; animation-duration: 13s; animation-delay: 17s; background: linear-gradient(135deg, #2e8b57 0%, #66cdaa 100%); transform: scale(0.9); }
+        .leaf:nth-child(48) { left: 77%; animation-duration: 18s; animation-delay: 19s; background: linear-gradient(135deg, #3cb371 0%, #32cd32 100%); transform: scale(1.15); }
+        .leaf:nth-child(49) { left: 87%; animation-duration: 11s; animation-delay: 21s; background: linear-gradient(135deg, #006400 0%, #90ee90 100%); transform: scale(0.85); }
+        .leaf:nth-child(50) { left: 97%; animation-duration: 15s; animation-delay: 23s; background: linear-gradient(135deg, #32cd32 0%, #2e8b57 100%); transform: scale(1.05); }
 
         @keyframes fall {
             0% {
@@ -397,10 +417,163 @@
             padding: 3rem;
             color: rgba(255, 255, 255, 0.6);
         }
+
+        .player-row {
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(30, 50, 30, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 10% auto;
+            border: 1px solid rgba(50, 205, 50, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #32cd32;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-player-info h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+        }
+
+        .modal-player-info .highest-tier {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #32cd32;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .modal-gamemodes {
+            margin-top: 1rem;
+        }
+
+        .modal-gamemodes h3 {
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .gamemode-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
     <!-- Animated leaves -->
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
@@ -437,10 +610,6 @@
             <a href="#" class="active">Rankings</a>
             <a href="/admin.html">Admin</a>
         </div>
-        <div class="search-container">
-            <span class="search-icon">Search</span>
-            <input type="text" id="searchInput" placeholder="Search player..." onkeyup="filterPlayers()">
-        </div>
     </nav>
 
     <div class="container">
@@ -463,7 +632,7 @@
                 </button>
                 <div class="search-container">
                     <span class="search-icon">Search</span>
-                    <input type="text" id="searchInput2" placeholder="Search player..." onkeyup="filterPlayers()">
+                    <input type="text" id="searchInput" placeholder="Search player..." onkeyup="filterPlayers()">
                 </div>
                 <div class="server-info">
                     <span>SERVER IP</span>
@@ -481,6 +650,36 @@
                 <div id="playerList">
                     <div class="loading">Loading rankings...</div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Profile Modal -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <div class="modal-avatar">
+                    <img id="modalAvatar" src="" alt="Player avatar">
+                </div>
+                <div class="modal-player-info">
+                    <h2 id="modalPlayerName">Player Name</h2>
+                    <div class="highest-tier">Highest: <span id="modalHighestTier">HT3</span></div>
+                </div>
+            </div>
+            <div class="modal-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="modalTotalPoints">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="modalRank">#1</div>
+                    <div class="stat-label">Global Rank</div>
+                </div>
+            </div>
+            <div class="modal-gamemodes">
+                <h3>Gamemode Tiers</h3>
+                <div id="modalGamemodes"></div>
             </div>
         </div>
     </div>
@@ -575,7 +774,7 @@
 
         function renderPlayers() {
             const playerList = document.getElementById('playerList');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase() || document.getElementById('searchInput2').value.toLowerCase();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
             let filteredPlayers = allPlayers;
             if (searchTerm) {
@@ -616,7 +815,7 @@
                 }).join('');
 
                 return `
-                    <div class="player-row">
+                    <div class="player-row" onclick="openModal('${player.username}')">
                         <div class="rank">#${player.rank}</div>
                         <div class="player-info">
                             <div class="player-head">
@@ -648,6 +847,54 @@
 
         function filterPlayers() {
             renderPlayers();
+        }
+
+        function openModal(username) {
+            const player = allPlayers.find(p => p.username === username);
+            if (!player) return;
+
+            const skinUrl = `https://mc-heads.net/body/${encodeURIComponent(player.username)}/120.png`;
+            
+            document.getElementById('modalAvatar').src = skinUrl;
+            document.getElementById('modalPlayerName').textContent = player.displayName;
+            document.getElementById('modalHighestTier').textContent = player.highestTier;
+            document.getElementById('modalTotalPoints').textContent = player.totalPoints;
+            document.getElementById('modalRank').textContent = '#' + player.rank;
+
+            // Generate gamemode display
+            const gamemodesHtml = Object.entries(player.gamemodes).map(([gamemode, tierData]) => {
+                const points = tierData.points || 0;
+                const calculatedTier = calculateTierFromPoints(points);
+                const tierClass = 'tier-' + calculatedTier.toLowerCase();
+                const icon = gamemode.toLowerCase() + '.svg';
+                return `
+                    <div class="gamemode-row">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="/images/${icon}" class="gamemode-icon" alt="${gamemode}">
+                            <span>${gamemode}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="tier-badge ${tierClass}">${calculatedTier}</span>
+                            <span class="points-display">${points}pts</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modalGamemodes').innerHTML = gamemodesHtml;
+            document.getElementById('playerModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('playerModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('playerModal');
+            if (event.target == modal) {
+                closeModal();
+            }
         }
     </script>
 </body>
