@@ -1,10 +1,12 @@
-// ADD THIS TO YOUR index.js (on WispByte) IN THE TOP SECTION WITH OTHER CONSTANTS
+// ========================================================
+// ADD THIS TO YOUR DISCORD BOT ON WISPBYTE
+// ========================================================
 
-// Web API configuration
-const WEBSITE_URL = process.env.WEBSITE_URL || 'https://srv-dadgkt740ujc73e89g1g.onrender.com';
-const WEBSITE_API_KEY = process.env.DISCORD_BOT_API_KEY || 'leaf-tiers-secret-key-2024';
+// 1. ADD THESE CONSTANTS AT THE TOP OF YOUR index.js:
 
-// Points calculation based on tier
+const WEBSITE_URL = 'https://srv-dadgkt740ujc73e89g1g.onrender.com';
+const WEBSITE_API_KEY = 'leaf-tiers-secret-key-2024';
+
 function pointsForTier(tier) {
   const tierPoints = {
     'HT1': 45, 'MT1': 35, 'LT1': 25,
@@ -15,15 +17,12 @@ function pointsForTier(tier) {
   return tierPoints[tier] || 0;
 }
 
-// ========================================================
-// ADD THIS FUNCTION INSIDE THE /result COMMAND HANDLER
-// AFTER the "await updateTierRole(interaction.guild, user.id, tier);" line
-// ========================================================
+// 2. ADD THIS CODE INSIDE YOUR /result COMMAND HANDLER
+// ADD IT RIGHT AFTER: await updateTierRole(interaction.guild, user.id, tier);
 
-// Update website
 try {
   const points = pointsForTier(tier);
-  const gamemode = 'Sword'; // Default gamemode
+  const gamemode = 'Sword';
   
   const websiteResponse = await fetch(`${WEBSITE_URL}/api/discord/update`, {
     method: 'POST',
@@ -52,9 +51,6 @@ try {
   console.error('Error updating website:', error);
 }
 
-// ========================================================
-// ADD THESE ENVIRONMENT VARIABLES TO YOUR WISPBYTE BOT
-// ========================================================
-// WEBSITE_URL=https://srv-dadgkt740ujc73e89g1g.onrender.com
-// DISCORD_BOT_API_KEY=leaf-tiers-secret-key-2024
+// 3. NO ENVIRONMENT VARIABLES NEEDED ON WISPBYTE
+//    (The API key and URL are hardcoded above)
 // ========================================================
