@@ -115,7 +115,7 @@ app.get('/api/tiers/:username', (req, res) => {
 // API endpoint to update/add a player's tier
 app.post('/api/tiers', (req, res) => {
     try {
-        const { username, tier, color, displayName } = req.body;
+        const { username, tier, points, gamemode, region, color, displayName } = req.body;
         
         if (!username || !tier) {
             return res.status(400).json({ error: 'Username and tier are required' });
@@ -126,11 +126,29 @@ app.post('/api/tiers', (req, res) => {
             data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
         }
         
-        data.players[username.toLowerCase()] = {
-            tier: tier,
-            color: color || 'gold',
-            displayName: displayName || username
-        };
+        const usernameLower = username.toLowerCase();
+        
+        // Initialize player if doesn't exist
+        if (!data.players[usernameLower]) {
+            data.players[usernameLower] = {
+                displayName: displayName || username,
+                gamemodes: {}
+            };
+        }
+        
+        // Add/update tier for specific gamemode
+        if (gamemode) {
+            data.players[usernameLower].gamemodes[gamemode] = {
+                tier: tier,
+                points: points || 0,
+                region: region || 'NA'
+            };
+        } else {
+            // Legacy support - if no gamemode specified, just set main tier
+            data.players[usernameLower].tier = tier;
+            data.players[usernameLower].color = color || 'gold';
+            data.players[usernameLower].displayName = displayName || username;
+        }
         
         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
         
@@ -148,17 +166,36 @@ app.post('/api/tiers', (req, res) => {
 app.delete('/api/tiers/:username', (req, res) => {
     try {
         const username = req.params.username.toLowerCase();
+        const gamemode = req.query.gamemode;
         
         if (fs.existsSync(DATA_FILE)) {
             const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
             if (data.players[username]) {
-                delete data.players[username];
-                fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-                
-                // Notify connected clients about the update
-                notifyClients();
-                
-                res.json({ success: true, message: `Deleted ${username}` });
+                if (gamemode && data.players[username].gamemodes) {
+                    // Delete specific gamemode tier
+                    delete data.players[username].gamemodes[gamemode];
+                    
+                    // If no more gamemodes, delete the player entirely
+                    if (Object.keys(data.players[username].gamemodes).length === 0) {
+                        delete data.players[username];
+                    }
+                    
+                    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+                    
+                    // Notify connected clients about the update
+                    notifyClients();
+                    
+                    res.json({ success: true, message: `Deleted ${username} from ${gamemode}` });
+                } else {
+                    // Delete entire player
+                    delete data.players[username];
+                    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+                    
+                    // Notify connected clients about the update
+                    notifyClients();
+                    
+                    res.json({ success: true, message: `Deleted ${username}` });
+                }
             } else {
                 res.status(404).json({ error: 'Player not found' });
             }

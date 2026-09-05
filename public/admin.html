@@ -438,9 +438,15 @@
 
     <div id="loginScreen">
         <div class="login-container">
-            <h1>🍃 LeafTiers Admin</h1>
-            <p>Click to access the admin panel</p>
-            <button onclick="login()">Access Admin Panel</button>
+            <h1>🍃 Admin Authentication</h1>
+            <p>Enter admin password to access the panel</p>
+            <form onsubmit="event.preventDefault(); login();">
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input type="password" id="password" required placeholder="Enter password">
+                </div>
+                <button type="submit">Login</button>
+            </form>
         </div>
     </div>
 
@@ -479,26 +485,35 @@
                         <input type="text" id="username" required placeholder="Username">
                     </div>
                     <div class="form-group">
-                        <label for="tier">Tier (manual selection)</label>
-                        <select id="tier" required>
-                            <option value="HT1">HT1</option>
-                            <option value="MT1">MT1</option>
-                            <option value="LT1">LT1</option>
-                            <option value="HT2">HT2</option>
-                            <option value="MT2">MT2</option>
-                            <option value="LT2">LT2</option>
-                            <option value="HT3">HT3</option>
-                            <option value="MT3">MT3</option>
-                            <option value="LT3">LT3</option>
-                            <option value="HT4">HT4</option>
-                            <option value="MT4">MT4</option>
-                            <option value="HT5">HT5</option>
-                            <option value="LT5">LT5</option>
+                        <label for="points">Points</label>
+                        <input type="number" id="points" required min="0" placeholder="Enter points">
+                    </div>
+                    <div class="form-group">
+                        <label for="tier">Tier (automatic)</label>
+                        <input type="text" id="tier" value="LT5" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="gamemode">Gamemode</label>
+                        <select id="gamemode" required>
+                            <option value="Sword">Sword</option>
+                            <option value="Axe">Axe</option>
+                            <option value="Mace">Mace</option>
+                            <option value="Vanilla">Vanilla</option>
+                            <option value="UHC">UHC</option>
+                            <option value="Pot">Pot</option>
+                            <option value="NethOP">NethOP</option>
+                            <option value="SMP">SMP</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="pointsPreview">Points (automatic)</label>
-                        <input type="text" id="pointsPreview" value="0" readonly>
+                        <label for="region">Region</label>
+                        <select id="region">
+                            <option value="NA">NA</option>
+                            <option value="EU">EU</option>
+                            <option value="ASIA">ASIA</option>
+                            <option value="SA">SA</option>
+                            <option value="OC">OC</option>
+                        </select>
                     </div>
                     <button type="submit">Save Changes</button>
                 </form>
@@ -529,7 +544,7 @@
                     <thead>
                         <tr>
                             <th>Player</th>
-                            <th>Display Name</th>
+                            <th>Gamemode</th>
                             <th>Tier / Points</th>
                             <th>Actions</th>
                         </tr>
@@ -578,18 +593,22 @@
                 .replaceAll("'", '&#039;');
         }
 
-        document.getElementById('tier').addEventListener('change', (e) => {
-            document.getElementById('pointsPreview').value = pointsForTier(e.target.value);
+        document.getElementById('points').addEventListener('input', (e) => {
+            const points = parseInt(e.target.value) || 0;
+            document.getElementById('tier').value = calculateTierFromPoints(points);
         });
 
         document.getElementById('tierForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const username = document.getElementById('username').value.trim();
-            const tier = document.getElementById('tier').value;
+            const points = parseInt(document.getElementById('points').value) || 0;
+            const tier = calculateTierFromPoints(points);
+            const gamemode = document.getElementById('gamemode').value;
+            const region = document.getElementById('region').value;
 
-            if (!username) {
-                alert('Username is required');
+            if (!username || !gamemode) {
+                alert('Username and gamemode are required');
                 return;
             }
 
@@ -600,6 +619,9 @@
                     body: JSON.stringify({
                         username,
                         tier,
+                        points,
+                        gamemode,
+                        region,
                         color: 'gold',
                         displayName: username
                     })
@@ -609,7 +631,7 @@
                 if (result.success) {
                     alert(result.message);
                     document.getElementById('tierForm').reset();
-                    document.getElementById('pointsPreview').value = '0';
+                    document.getElementById('tier').value = 'LT5';
                     loadTiers();
                 } else {
                     alert('Error: ' + result.error);
@@ -620,6 +642,14 @@
         });
 
         async function login() {
+            const password = document.getElementById('password').value;
+            if (!password) {
+                alert('Please enter password');
+                return;
+            }
+            
+            // For now, skip actual authentication since API doesn't have it
+            // In production, you'd verify against the server
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             loadTiers();
@@ -639,27 +669,33 @@
                 if (data.players) {
                     Object.keys(data.players).forEach(username => {
                         const player = data.players[username];
+                        const gamemodes = player.gamemodes || {};
                         
                         totalPlayers++;
-                        totalTiers++;
-                        
-                        const tier = player.tier || 'LT5';
-                        const tierClass = 'tier-' + tier.toLowerCase();
-                        const points = pointsForTier(tier);
-                        
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${escapeHtml(username)}</td>
-                            <td>${escapeHtml(player.displayName || username)}</td>
-                            <td>
-                                <span class="tier-badge ${tierClass}">${tier}</span>
-                                <span class="points-display">${points}pts</span>
-                            </td>
-                            <td>
-                                <button class="delete-btn" onclick="deleteTier('${escapeHtml(username)}')">Delete</button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
+                        totalTiers += Object.keys(gamemodes).length;
+                        if (Object.keys(gamemodes).length > 1) {
+                            multipleTierPlayers++;
+                        }
+
+                        Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
+                            const points = tierData.points || 0;
+                            const tier = calculateTierFromPoints(points);
+                            const tierClass = 'tier-' + tier.toLowerCase();
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${escapeHtml(username)}</td>
+                                <td>${escapeHtml(gamemode)}</td>
+                                <td>
+                                    <span class="tier-badge ${tierClass}">${tier}</span>
+                                    <span class="points-display">${points}pts</span>
+                                </td>
+                                <td>
+                                    <button class="delete-btn" onclick="deleteTier('${escapeHtml(username)}', '${escapeHtml(gamemode)}')">Delete</button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
                     });
                 }
 
@@ -671,13 +707,13 @@
             }
         }
 
-        async function deleteTier(username) {
-            if (!confirm(`Delete ${username}?`)) {
+        async function deleteTier(username, gamemode) {
+            if (!confirm(`Delete ${username} from ${gamemode}?`)) {
                 return;
             }
 
             try {
-                const response = await fetch(`/api/tiers/${encodeURIComponent(username)}`, {
+                const response = await fetch(`/api/tiers/${encodeURIComponent(username)}?gamemode=${encodeURIComponent(gamemode)}`, {
                     method: 'DELETE'
                 });
 
