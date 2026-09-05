@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: leaftiertagger-web-api
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ADMIN_PASSWORD
+        value: P6$zT2!nV9#qD4@kY7Er
+      - key: DATA_FILE
+        value: ./tiers.json
