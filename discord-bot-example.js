@@ -3,7 +3,7 @@ const axios = require('axios');
 
 // Configuration
 const TOKEN = process.env.DISCORD_TOKEN;
-const API_URL = 'http://localhost:3000/api/discord/update';
+const API_URL = 'https://srv-dadgkt740ujc73e89g1g.onrender.com/api/discord/update';
 const API_KEY = process.env.DISCORD_BOT_API_KEY || 'leaf-tiers-secret-key-2024';
 const GUILD_ID = process.env.DISCORD_GUILD_ID;
 
