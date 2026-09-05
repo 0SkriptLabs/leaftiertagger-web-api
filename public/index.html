@@ -398,6 +398,24 @@
       color: #1a1a1a !important;
     }
 
+.ht-lt3 {
+  background: linear-gradient(135deg, #ffe9a3, #e8c86a);
+  box-shadow: 0 2px 8px rgba(255, 220, 120, 0.35);
+  color: #1a1a1a !important;
+}
+
+.ht-ht4 {
+  background: linear-gradient(135deg, #d8b4fe, #a78bfa);
+  box-shadow: 0 2px 8px rgba(196, 150, 255, 0.35);
+  color: #1a1a1a !important;
+}
+
+.ht-lt4 {
+  background: linear-gradient(135deg, #d8b4fe, #a78bfa);
+  box-shadow: 0 2px 8px rgba(196, 150, 255, 0.35);
+  color: #1a1a1a !important;
+}
+
     .ht-other {
       background: linear-gradient(135deg, #6b6b80, #4a4a5a);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -723,7 +741,7 @@
               });
               
               // Update highest tier based on points (HT1 best, LT5 worst)
-              const tierOrder = ['HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'MT4', 'HT5', 'LT5'];
+              const tierOrder = ['HT1', 'MT1', 'LT1', 'HT2', 'MT2', 'LT2', 'HT3', 'MT3', 'LT3', 'HT4', 'MT4', 'HT5', 'MT5', 'LT5'];
               const currentIndex = tierOrder.indexOf(highestTier);
               const newTierIndex = tierOrder.indexOf(tier);
               if (newTierIndex < currentIndex) {
