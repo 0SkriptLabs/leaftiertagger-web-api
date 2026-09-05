@@ -1,149 +1,234 @@
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 3000;
+const http = require('http');
+const WebSocket = require('ws');
 
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+const PORT = process.env.PORT || 8080;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const TIERS_FILE = path.join(__dirname, 'tiers.json');
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'P6$zT2!nV9#qD4@kY7Er';
+// Discord Bot API Key (should be set as environment variable)
+const DISCORD_BOT_API_KEY = process.env.DISCORD_BOT_API_KEY || 'your-discord-bot-api-key-here';
 
-// Read tiers from file
-function readTiers() {
-    try {
-        const data = fs.readFileSync(TIERS_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        return { players: {} };
-    }
-}
+// Data file
+const DATA_FILE = path.join(__dirname, 'tiers.json');
 
-// Write tiers to file
-function writeTiers(data) {
-    fs.writeFileSync(TIERS_FILE, JSON.stringify(data, null, 2));
-}
+// Store connected WebSocket clients
+const clients = new Set();
 
-// Function to calculate tier based on points
-function calculateTierFromPoints(points) {
-    if (points >= 45) return 'HT1';
-    if (points >= 20) return 'HT2';
-    if (points >= 6) return 'HT3';
-    if (points >= 3) return 'HT4';
-    if (points >= 1) return 'HT5';
-    return 'LT5'; // Default for 0 points
-}
-
-// GET API endpoint - returns tier data for Minecraft mod
-app.get('/api/tiers', (req, res) => {
-    const data = readTiers();
+// WebSocket connection handling
+wss.on('connection', (ws) => {
+    clients.add(ws);
+    console.log('New client connected');
     
-    // Convert new structure to format expected by Minecraft mod
-    const modFormat = {};
+    ws.on('close', () => {
+        clients.delete(ws);
+        console.log('Client disconnected');
+    });
     
-    for (const [username, playerData] of Object.entries(data.players)) {
-        // For backward compatibility, use the first tier found or default
-        const gamemodes = playerData.gamemodes || {};
-        const firstGamemode = Object.keys(gamemodes)[0] || 'Sword';
-        const tierData = gamemodes[firstGamemode] || { tier: 'LT3', points: 0, region: 'NA' };
-        
-        // Auto-calculate tier based on points if not explicitly set
-        const calculatedTier = calculateTierFromPoints(tierData.points || 0);
-        
-        modFormat[username] = {
-            tier: calculatedTier,
-            gamemode: firstGamemode,
-            region: tierData.region,
-            displayName: playerData.displayName || username
-        };
-    }
-    
-    res.json({ players: modFormat });
+    ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
+        clients.delete(ws);
+    });
 });
 
-// GET API endpoint - returns full tier data for web interface
-app.get('/api/tiers/full', (req, res) => {
-    const data = readTiers();
-    res.json(data);
-});
-
-// POST API endpoint - add/update player tier
-app.post('/api/tiers', (req, res) => {
-    const { username, tier, gamemode, region, points, password } = req.body;
-    
-    if (password !== ADMIN_PASSWORD) {
-        return res.status(401).json({ success: false, error: 'Invalid password' });
-    }
-    
-    if (!username || !tier || !gamemode) {
-        return res.status(400).json({ success: false, error: 'Username, tier, and gamemode are required' });
-    }
-    
-    const data = readTiers();
-    
-    if (!data.players[username]) {
-        data.players[username] = {
-            displayName: username,
-            gamemodes: {}
-        };
-    }
-    
-    data.players[username].gamemodes[gamemode] = {
-        tier: tier,
-        points: points || 0,
-        region: region || 'NA'
-    };
-    
-    writeTiers(data);
-    
-    res.json({ success: true, message: `Updated ${username} to ${tier} (${points} points) in ${gamemode}` });
-});
-
-// DELETE API endpoint - remove player tier for specific gamemode
-app.delete('/api/tiers/:username', (req, res) => {
-    const { username } = req.params;
-    const { password, gamemode } = req.query;
-    
-    if (password !== ADMIN_PASSWORD) {
-        return res.status(401).json({ success: false, error: 'Invalid password' });
-    }
-    
-    const data = readTiers();
-    
-    if (!data.players[username]) {
-        return res.status(404).json({ success: false, error: 'Player not found' });
-    }
-    
-    if (gamemode) {
-        // Remove specific gamemode tier
-        delete data.players[username].gamemodes[gamemode];
-        
-        // If no gamemodes left, remove the player entirely
-        if (Object.keys(data.players[username].gamemodes).length === 0) {
-            delete data.players[username];
+// Function to notify all connected clients of updates
+function notifyClients() {
+    const message = JSON.stringify({ type: 'update', timestamp: new Date().toISOString() });
+    clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+        } catch (error) {
+            console.error('Error sending to client:', error);
+            clients.delete(client);
         }
-    } else {
-        // Remove entire player
-        delete data.players[username];
+    });
+}
+
+// Initialize data file if it doesn't exist
+function initDataFile() {
+    if (!fs.existsSync(DATA_FILE)) {
+        const initialData = {
+            players: {
+                "Steve": {
+                    tier: "LT3",
+                    color: "gold",
+                    displayName: "Steve"
+                },
+                "Alex": {
+                    tier: "HT1",
+                    color: "red",
+                    displayName: "Alex"
+                }
+            }
+        };
+        fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
     }
-    
-    writeTiers(data);
-    
-    res.json({ success: true, message: `Removed ${username}${gamemode ? ' from ' + gamemode : ''}` });
+}
+
+// API endpoint for the Minecraft mod
+app.get('/api/tiers', (req, res) => {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            res.json(data);
+        } else {
+            res.json({ players: {} });
+        }
+    } catch (error) {
+        console.error('Error reading data file:', error);
+        res.status(500).json({ error: 'Failed to read tier data' });
+    }
 });
 
-// Admin authentication endpoint
-app.post('/api/auth', (req, res) => {
-    const { password } = req.body;
-    
-    if (password === ADMIN_PASSWORD) {
-        res.json({ success: true });
-    } else {
-        res.status(401).json({ success: false });
+// API endpoint to get a specific player's tier
+app.get('/api/tiers/:username', (req, res) => {
+    try {
+        const username = req.params.username.toLowerCase();
+        if (fs.existsSync(DATA_FILE)) {
+            const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            const playerData = data.players[username];
+            if (playerData) {
+                res.json(playerData);
+            } else {
+                res.status(404).json({ error: 'Player not found' });
+            }
+        } else {
+            res.status(404).json({ error: 'Player not found' });
+        }
+    } catch (error) {
+        console.error('Error reading player data:', error);
+        res.status(500).json({ error: 'Failed to read player data' });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// API endpoint to update/add a player's tier
+app.post('/api/tiers', (req, res) => {
+    try {
+        const { username, tier, color, displayName } = req.body;
+        
+        if (!username || !tier) {
+            return res.status(400).json({ error: 'Username and tier are required' });
+        }
+        
+        let data = { players: {} };
+        if (fs.existsSync(DATA_FILE)) {
+            data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+        }
+        
+        data.players[username.toLowerCase()] = {
+            tier: tier,
+            color: color || 'gold',
+            displayName: displayName || username
+        };
+        
+        fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        
+        // Notify connected clients about the update
+        notifyClients();
+        
+        res.json({ success: true, message: `Updated ${username} to ${tier}` });
+    } catch (error) {
+        console.error('Error updating tier data:', error);
+        res.status(500).json({ error: 'Failed to update tier data' });
+    }
+});
+
+// API endpoint to delete a player
+app.delete('/api/tiers/:username', (req, res) => {
+    try {
+        const username = req.params.username.toLowerCase();
+        
+        if (fs.existsSync(DATA_FILE)) {
+            const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+            if (data.players[username]) {
+                delete data.players[username];
+                fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+                
+                // Notify connected clients about the update
+                notifyClients();
+                
+                res.json({ success: true, message: `Deleted ${username}` });
+            } else {
+                res.status(404).json({ error: 'Player not found' });
+            }
+        } else {
+            res.status(404).json({ error: 'Player not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting player:', error);
+        res.status(500).json({ error: 'Failed to delete player' });
+    }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Discord Bot endpoint to update tiers from /results command
+app.post('/api/discord/update', (req, res) => {
+    try {
+        // Verify API key from Discord bot
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Unauthorized - Missing API key' });
+        }
+        
+        const token = authHeader.substring(7);
+        if (token !== DISCORD_BOT_API_KEY) {
+            return res.status(401).json({ error: 'Unauthorized - Invalid API key' });
+        }
+        
+        const { username, tier, ign, user } = req.body;
+        
+        if (!username || !tier) {
+            return res.status(400).json({ error: 'Username and tier are required' });
+        }
+        
+        let data = { players: {} };
+        if (fs.existsSync(DATA_FILE)) {
+            data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+        }
+        
+        // Determine color based on tier
+        let color = 'gold';
+        if (tier.startsWith('LT')) color = 'gold';
+        else if (tier.startsWith('MT')) color = 'diamond';
+        else if (tier.startsWith('HT')) color = 'red';
+        
+        data.players[username.toLowerCase()] = {
+            tier: tier,
+            color: color,
+            displayName: ign || username,
+            user: user || null
+        };
+        
+        fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        
+        // Notify connected clients about the update
+        notifyClients();
+        
+        res.json({ success: true, message: `Updated ${username} to ${tier}` });
+    } catch (error) {
+        console.error('Error processing Discord bot update:', error);
+        res.status(500).json({ error: 'Failed to process update' });
+    }
+});
+
+// Initialize and start server
+initDataFile();
+
+server.listen(PORT, () => {
+    console.log(`Leaf Tier Tagger API running on port ${PORT}`);
+    console.log(`API endpoint: http://localhost:${PORT}/api/tiers`);
+    console.log(`WebSocket endpoint: ws://localhost:${PORT}`);
 });
