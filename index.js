@@ -34,7 +34,7 @@ const VERIFY_SECRET = process.env.MINECRAFT_VERIFY_SECRET?.trim();
 const VERIFY_PORT = Number(process.env.MINECRAFT_VERIFY_PORT || 9181);
 const VERIFY_CODE_LIFETIME = 10 * 60 * 1000;
 
-const WEBSITE_URL = 'https://srv-dadgkt740ujc73e89g1g.onrender.com';
+const WEBSITE_URL = 'https://leaftiertagger-web-api.onrender.com';
 const WEBSITE_API_KEY = 'leaf-tiers-secret-key-2024';
 
 function pointsForTier(tier) {
