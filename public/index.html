@@ -1,15 +1,10 @@
-from pathlib import Path
-
-src_path = Path("/mnt/data/Pasted text(20260906-140614).txt")
-src = src_path.read_text(encoding="utf-8")
-
-# Keep the user's existing JS/data/API logic, but replace the visual shell/CSS and a few HTML labels
-# with a more polished LeafTiers layout while preserving IDs/classes the JS relies on.
-
-head_start = src.find("<style>")
-head_end = src.find("</style>") + len("</style>")
-
-new_style = r'''<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeafTiers</title>
+  <style>
     :root {
       --bg: #07110d;
       --bg-2: #0b1712;
@@ -545,25 +540,450 @@ new_style = r'''<style>
       .modal-stats { grid-template-columns: 1fr; }
       .tier-badge { min-width: 0; width: 100%; }
     }
-  </style>'''
+  </style>
+</head>
+<body>
+  <!-- Falling green leaves -->
+  <div class="leaves-container">
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+  </div>
 
-enhanced = src[:head_start] + new_style + src[head_end:]
+  <header>
+    <div class="logo">LeafTiers</div>
+    <nav class="nav-links">
+      <a href="#player-list">Rankings</a>
+      <a href="https://discord.com" target="_blank" rel="noopener">Discord</a>
+    </nav>
+  </header>
 
-# Make the Information button actually useful: it will show a tiny info modal-like alert.
-enhanced = enhanced.replace(
-    '<button class="tab-btn">Information</button>',
-    '<button class="tab-btn" id="informationBtn">Information</button>'
-)
+  <!-- Player Modal -->
+  <div class="modal-overlay" id="playerModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closePlayerModal()">×</button>
+      <div class="modal-header">
+        <div class="modal-avatar">
+          <img id="modalAvatar" src="" alt="Player Avatar">
+        </div>
+        <div class="modal-player-info">
+          <h3 id="modalPlayerName">Player Name</h3>
+          <div class="rank" id="modalRank">Rank #1</div>
+        </div>
+      </div>
+      <div class="modal-stats">
+        <div class="stat-box">
+          <div class="label">Total Points</div>
+          <div class="value" id="modalTotalPoints">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Highest Tier</div>
+          <div class="value tier-value" id="modalHighestTier">HT1</div>
+        </div>
+      </div>
+      <div class="modal-tiers">
+        <h4>All Tiers</h4>
+        <div class="modal-tier-list" id="modalTierList"></div>
+      </div>
+    </div>
+  </div>
 
-# Improve the header nav slightly while preserving the ranking link.
-enhanced = enhanced.replace(
-    '<nav class="nav-links">\n      <a href="#">Rankings</a>\n    </nav>',
-    '<nav class="nav-links">\n      <a href="#player-list">Rankings</a>\n      <a href="https://discord.com" target="_blank" rel="noopener">Discord</a>\n    </nav>'
-)
+  <div class="container">
+    <div class="card">
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="All">All</button>
+        <button class="filter-btn" data-filter="Sword"><img src="/images/sword.png" alt="Sword"> Sword</button>
+        <button class="filter-btn" data-filter="Axe"><img src="/images/axe.png" alt="Axe"> Axe</button>
+        <button class="filter-btn" data-filter="Mace"><img src="/images/mace.png" alt="Mace"> Mace</button>
+        <button class="filter-btn" data-filter="Vanilla"><img src="/images/vanilla.png" alt="Vanilla"> Vanilla</button>
+        <button class="filter-btn" data-filter="UHC"><img src="/images/uhc.png" alt="UHC"> UHC</button>
+        <button class="filter-btn" data-filter="Pot"><img src="/images/pot.png" alt="Pot"> Pot</button>
+        <button class="filter-btn" data-filter="NethOP"><img src="/images/nethop.png" alt="NethOP"> NethOP</button>
+        <button class="filter-btn" data-filter="SMP"><img src="/images/smp.png" alt="SMP"> SMP</button>
+      </div>
 
-# Add useful behavior to server IP + information button before initial load.
-marker = "    // Initial load from API\n"
-extra_js = r'''
+      <div class="secondary-bar">
+        <button class="tab-btn" id="informationBtn">Information</button>
+        <div class="search-wrapper">
+          <input type="text" class="search-input" id="mainSearch" placeholder="Search player...">
+        </div>
+        <div class="server-ip">
+          SERVER IP <span>leaftiers.com</span>
+        </div>
+      </div>
+
+      <div class="table-header">
+        <span>#</span>
+        <span>PLAYER</span>
+        <span>TIERS</span>
+        <span>TOTAL POINTS</span>
+      </div>
+
+      <div id="player-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // Player data - will be loaded from API
+    let players = [];
+
+    let currentFilter = "All";
+    let currentSearch = "";
+
+    const playerList = document.getElementById("player-list");
+    const mainSearch = document.getElementById("mainSearch");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+    // =========================
+    // PERSISTENT PLAYER DATA
+    // =========================
+    //
+    // Loading order:
+    // 1. /api/tiers   - your live backend
+    // 2. /tiers.json  - tiers.json served with the website
+    // 3. localStorage - last good copy saved in this browser
+    //
+    // This prevents a normal page reload from wiping the visible list
+    // just because the API temporarily returns nothing.
+
+    const TIER_CACHE_KEY = "leaftiers_saved_tiers";
+
+    function hasPlayers(data) {
+      return !!(
+        data &&
+        data.players &&
+        typeof data.players === "object" &&
+        Object.keys(data.players).length > 0
+      );
+    }
+
+    function saveTierCache(data) {
+      if (!hasPlayers(data)) return;
+
+      try {
+        localStorage.setItem(TIER_CACHE_KEY, JSON.stringify(data));
+      } catch (error) {
+        console.warn("Could not save tier cache:", error);
+      }
+    }
+
+    function loadTierCache() {
+      try {
+        const saved = localStorage.getItem(TIER_CACHE_KEY);
+        if (!saved) return null;
+
+        const parsed = JSON.parse(saved);
+        return hasPlayers(parsed) ? parsed : null;
+      } catch (error) {
+        console.warn("Could not read tier cache:", error);
+        return null;
+      }
+    }
+
+    async function fetchJson(url) {
+      try {
+        const response = await fetch(url, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`${url} returned HTTP ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.warn(`Could not load ${url}:`, error);
+        return null;
+      }
+    }
+
+    function applyTierData(data) {
+      players = [];
+
+      if (!data || !data.players) {
+        renderPlayers();
+        return;
+      }
+
+      Object.keys(data.players).forEach(username => {
+        const playerData = data.players[username];
+        const gamemodes = playerData.gamemodes || {};
+
+        let totalPoints = 0;
+        let highestTier = "LT5";
+        let categories = [];
+        let tiers = [];
+
+        Object.entries(gamemodes).forEach(([gamemode, tierData]) => {
+          const points = tierData.points || 0;
+          const tier = (tierData.tier || "LT5").toUpperCase();
+
+          totalPoints += points;
+          categories.push(gamemode);
+
+          tiers.push({
+            label: tier,
+            points: points,
+            category: gamemode
+          });
+
+          // Best -> worst
+          const tierOrder = [
+            "HT1", "MT1", "LT1",
+            "HT2", "MT2", "LT2",
+            "HT3", "MT3", "LT3",
+            "HT4", "MT4", "LT4",
+            "HT5", "MT5", "LT5"
+          ];
+
+          const currentIndex = tierOrder.indexOf(highestTier);
+          const newTierIndex = tierOrder.indexOf(tier);
+
+          if (newTierIndex !== -1 && (currentIndex === -1 || newTierIndex < currentIndex)) {
+            highestTier = tier;
+          }
+        });
+
+        players.push({
+          name: username,
+          highest: highestTier,
+          total: totalPoints,
+          categories: categories,
+          tiers: tiers,
+          emojis: ["crystal", "helmet", "heart"]
+        });
+      });
+
+      renderPlayers();
+    }
+
+    async function loadPlayersFromAPI() {
+      // 1) Try the live API first.
+      const apiData = await fetchJson("/api/tiers");
+
+      if (hasPlayers(apiData)) {
+        saveTierCache(apiData);
+        applyTierData(apiData);
+        return;
+      }
+
+      // 2) If API is unavailable/empty, try the tiers.json file in your site/repo.
+      const jsonData = await fetchJson("/tiers.json");
+
+      if (hasPlayers(jsonData)) {
+        saveTierCache(jsonData);
+        applyTierData(jsonData);
+        return;
+      }
+
+      // 3) Last resort: use the most recent good copy saved in this browser.
+      const cachedData = loadTierCache();
+
+      if (cachedData) {
+        console.log("Loaded players from local saved cache.");
+        applyTierData(cachedData);
+        return;
+      }
+
+      // Nothing could be loaded.
+      players = [];
+      renderPlayers();
+    }
+
+    function getGamemodeIcon(category) {
+      const icons = {
+        'Sword': '/images/sword.png',
+        'Axe': '/images/axe.png',
+        'Mace': '/images/mace.png',
+        'Vanilla': '/images/vanilla.png',
+        'UHC': '/images/uhc.png',
+        'Pot': '/images/pot.png',
+        'NethOP': '/images/nethop.png',
+        'SMP': '/images/smp.png'
+      };
+      return icons[category] || '/images/sword.png';
+    }
+
+    function getRankClass(rank) {
+      if (rank === 1) return "rank-1";
+      if (rank === 2) return "rank-2";
+      if (rank === 3) return "rank-3";
+      return "rank-other";
+    }
+
+    function getTierClass(label) {
+      const upper = label.toUpperCase();
+
+      if (upper === "HT1") return "ht-ht1";
+      if (upper === "HT2") return "ht-ht2";
+      if (upper === "HT3") return "ht-ht3";
+      if (upper === "LT3") return "ht-lt3";
+      if (upper === "HT4") return "ht-ht4";
+      if (upper === "LT4") return "ht-lt4";
+
+      return "ht-other";
+    }
+
+    function renderPlayers() {
+      // Filter + Search
+      let filtered = players.filter(player => {
+        const matchesFilter = currentFilter === "All" || player.categories.includes(currentFilter);
+        const matchesSearch = player.name.toLowerCase().includes(currentSearch.toLowerCase());
+        return matchesFilter && matchesSearch;
+      });
+
+      // Sort by total points descending
+      filtered.sort((a, b) => b.total - a.total);
+
+      if (filtered.length === 0) {
+        if (players.length === 0) {
+          playerList.innerHTML = `<div class="no-results">No players have been tiered yet. Use the Discord bot to add players!</div>`;
+        } else {
+          playerList.innerHTML = `<div class="no-results">No players found</div>`;
+        }
+        return;
+      }
+
+      playerList.innerHTML = filtered.map((player, index) => {
+        const rank = index + 1;
+        const rankClass = getRankClass(rank);
+
+        const tiersHtml = player.tiers.map(t => {
+          const gamemodeIcon = getGamemodeIcon(t.category);
+          return `
+          <div class="tier-badge">
+            <img class="gamemode-icon" src="${gamemodeIcon}" alt="${t.category}">
+            <span class="ht ${getTierClass(t.label)}">${t.label}</span>
+            <span class="pts">${t.points}pts</span>
+          </div>
+        `;
+        }).join("");
+
+        return `
+          <div class="player-row" data-name="${player.name}" onclick="openPlayerModal('${player.name}', ${rank})">
+            <div class="rank ${rankClass}">#${rank}</div>
+            <div class="player-info">
+              <div class="avatar">
+                <img src="https://mc-heads.net/avatar/${player.name}/100" alt="${player.name}" onerror="this.src='https://mc-heads.net/avatar/steve/100'">
+              </div>
+              <div>
+                <div class="player-name">${player.name}</div>
+                <div class="player-sub">Highest: ${player.highest}</div>
+              </div>
+            </div>
+            <div class="tiers">
+              ${tiersHtml}
+            </div>
+            <div class="total-points">${player.total} pts</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // Filter buttons
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        renderPlayers();
+      });
+    });
+
+    // Search
+    mainSearch.addEventListener("input", (e) => {
+      currentSearch = e.target.value.trim();
+      renderPlayers();
+    });
+
+    // Player Modal Functions
+    function openPlayerModal(playerName, rank) {
+      const player = players.find(p => p.name === playerName);
+      if (!player) return;
+
+      // Update modal content
+      document.getElementById('modalAvatar').src = `https://mc-heads.net/avatar/${player.name}/200`;
+      document.getElementById('modalPlayerName').textContent = player.name;
+      document.getElementById('modalRank').textContent = `Rank #${rank}`;
+      document.getElementById('modalTotalPoints').textContent = player.total;
+      document.getElementById('modalHighestTier').textContent = player.highest;
+
+      // Update tier list
+      const tierList = document.getElementById('modalTierList');
+      tierList.innerHTML = player.tiers.map(t => {
+        const gamemodeIcon = getGamemodeIcon(t.category);
+        return `
+        <div class="tier-badge">
+          <img class="gamemode-icon" src="${gamemodeIcon}" alt="${t.category}">
+          <span class="ht ${getTierClass(t.label)}">${t.label}</span>
+          <span class="pts">${t.points}pts</span>
+          <span style="color: #8a8aa0; font-size: 0.75rem; margin-left: 8px;">${t.category}</span>
+        </div>
+      `;
+      }).join('');
+
+      // Show modal
+      document.getElementById('playerModal').classList.add('active');
+    }
+
+    function closePlayerModal() {
+      document.getElementById('playerModal').classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('playerModal').addEventListener('click', (e) => {
+      if (e.target.id === 'playerModal') {
+        closePlayerModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePlayerModal();
+      }
+    });
+
+    // WebSocket connection for real-time updates
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${wsProtocol}//${window.location.host}`);
+    
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "update") {
+          loadPlayersFromAPI();
+        }
+      } catch (error) {
+        console.warn("Ignored invalid WebSocket message:", error);
+      }
+    };
+    
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+
     // Extra UI interactions
     const informationBtn = document.getElementById("informationBtn");
     if (informationBtn) {
@@ -588,9 +1008,8 @@ extra_js = r'''
       });
     }
 
-'''
-enhanced = enhanced.replace(marker, extra_js + marker)
-
-out = Path("/mnt/data/leaftiers-enhanced.html")
-out.write_text(enhanced, encoding="utf-8")
-print(out)
+    // Initial load from API
+    loadPlayersFromAPI();
+  </script>
+</body>
+</html>
