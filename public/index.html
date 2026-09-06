@@ -963,11 +963,12 @@
     const result=players.filter(p=>{
       const effectiveGamemode=s.gamemode!=="All"?s.gamemode:s.filter;
 
-      return
+      return (
         (effectiveGamemode==="All"||p.categories.includes(effectiveGamemode)) &&
         (s.region==="All"||p.region===s.region) &&
         (s.tier==="All"||p.highest===s.tier||p.tiers.some(t=>t.label===s.tier)) &&
-        p.name.toLowerCase().includes(s.search.toLowerCase());
+        p.name.toLowerCase().includes(s.search.toLowerCase())
+      );
     });
 
     result.sort((a,b)=>s.points==="low"?a.total-b.total:b.total-a.total);
@@ -1143,8 +1144,14 @@
     ws.onmessage=e=>{
       try{
         const d=JSON.parse(e.data);
-        if(d.type==="update") loadPlayers();
-      }catch{}
+        if(!d.type || d.type==="update" || d.type==="tiers_update" || d.type==="refresh"){
+          loadPlayers();
+        }
+      }catch{
+        if(String(e.data).toLowerCase().includes("update")){
+          loadPlayers();
+        }
+      }
     };
   }catch(e){
     console.warn(e);
