@@ -600,11 +600,170 @@
       height: 14px;
       opacity: 0.85;
     }
+  
+    /* ===== LEAFTIERS GREEN THEME OVERRIDES ===== */
+    html, body {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M25 3C15 4 7.7 7.2 5 13c-2.2 5.2.7 9.7 5.4 9 5.2-.8 9.7-6.3 12.2-13.1-2 4-5.5 7.6-10.2 10 3.3-3.6 7-8.4 12.6-15.9Z' fill='%234ade80' stroke='%23052e16' stroke-width='1.2'/%3E%3Cpath d='M10.8 20c-2.2 1.7-4.2 3.8-6 6' stroke='%234ade80' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 5 25, auto;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at top, #123524 0%, #081c13 48%, #020a06 100%);
+    }
+
+    body::before {
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(34,197,94,.13) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(74,222,128,.09) 0%, transparent 40%);
+    }
+
+    header {
+      background: rgba(3, 18, 11, 0.78);
+      border-bottom-color: rgba(74, 222, 128, 0.12);
+    }
+
+    .logo {
+      color: #f3fff7;
+    }
+
+    .logo::first-letter {
+      color: #4ade80;
+    }
+
+    .nav-links {
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-links a {
+      color: #9db8a7;
+      padding: 9px 13px;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover {
+      color: #ffffff;
+      background: rgba(74,222,128,.08);
+    }
+
+    .nav-links .discord-link {
+      color: #06240f;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      font-weight: 800;
+      border: 1px solid rgba(134,239,172,.35);
+      box-shadow: 0 7px 22px rgba(34,197,94,.16);
+    }
+
+    .nav-links .discord-link:hover {
+      color: #031308;
+      background: linear-gradient(135deg, #6aef96, #32d66b);
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(10,43,28,.94), rgba(5,28,18,.97));
+      border: 1px solid rgba(74,222,128,.12);
+      box-shadow: 0 22px 60px rgba(0,0,0,.28);
+    }
+
+    .filter-btn {
+      background-color: #16803d;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
+    }
+
+    .filter-btn:hover {
+      background-color: #20a14e;
+    }
+
+    .filter-btn.active {
+      background-color: #36d66c;
+      color: #04150a;
+    }
+
+    .tab-btn {
+      background: linear-gradient(135deg, #35d86b, #159447);
+      color: #04150a;
+    }
+
+    .search-input {
+      background-color: #071b11;
+      border-color: #185d35;
+    }
+
+    .search-input:focus {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74,222,128,.08);
+    }
+
+    .server-ip span {
+      color: #5eef8a;
+    }
+
+    .table-header {
+      background-color: #0d512e;
+      color: #8cffae;
+    }
+
+    .player-row:hover {
+      background-color: rgba(74,222,128,.055);
+    }
+
+    .avatar {
+      background-color: #071b11;
+      border-color: rgba(74,222,128,.5);
+      box-shadow: 0 0 15px rgba(34,197,94,.18);
+    }
+
+    .total-points {
+      color: #66ef91;
+    }
+
+    .modal {
+      background: linear-gradient(145deg, rgba(11,47,30,.98), rgba(5,27,17,.99));
+      border-color: rgba(74,222,128,.16);
+    }
+
+    .modal-avatar {
+      border-color: rgba(74,222,128,.58);
+      box-shadow: 0 0 20px rgba(34,197,94,.2);
+    }
+
+    .modal-player-info .rank {
+      color: #5eef8a;
+    }
+
+    /* Make leaves a little more visible without covering content. */
+    .leaf {
+      opacity: .82;
+      box-shadow: 0 0 9px rgba(74,222,128,.42);
+    }
+
+    button, a, input, .player-row, .emoji-item {
+      cursor: inherit !important;
+    }
+
   </style>
 </head>
 <body>
   <!-- Falling green leaves -->
   <div class="leaves-container">
+    <div class="leaf" style="left:7%;animation-duration:10s;animation-delay:-0.00s;width:14px;height:14px"></div>
+    <div class="leaf" style="left:18%;animation-duration:11s;animation-delay:-0.73s;width:15px;height:15px"></div>
+    <div class="leaf" style="left:29%;animation-duration:12s;animation-delay:-1.46s;width:16px;height:16px"></div>
+    <div class="leaf" style="left:40%;animation-duration:13s;animation-delay:-2.19s;width:17px;height:17px"></div>
+    <div class="leaf" style="left:51%;animation-duration:14s;animation-delay:-2.92s;width:18px;height:18px"></div>
+    <div class="leaf" style="left:62%;animation-duration:15s;animation-delay:-3.65s;width:19px;height:19px"></div>
+    <div class="leaf" style="left:73%;animation-duration:10s;animation-delay:-4.38s;width:20px;height:20px"></div>
+    <div class="leaf" style="left:84%;animation-duration:11s;animation-delay:-5.11s;width:21px;height:21px"></div>
+    <div class="leaf" style="left:95%;animation-duration:12s;animation-delay:-5.84s;width:14px;height:14px"></div>
+    <div class="leaf" style="left:9%;animation-duration:13s;animation-delay:-6.57s;width:15px;height:15px"></div>
+    <div class="leaf" style="left:20%;animation-duration:14s;animation-delay:-7.30s;width:16px;height:16px"></div>
+    <div class="leaf" style="left:31%;animation-duration:15s;animation-delay:-8.03s;width:17px;height:17px"></div>
+    <div class="leaf" style="left:42%;animation-duration:10s;animation-delay:-8.76s;width:18px;height:18px"></div>
+    <div class="leaf" style="left:53%;animation-duration:11s;animation-delay:-9.49s;width:19px;height:19px"></div>
+    <div class="leaf" style="left:64%;animation-duration:12s;animation-delay:-10.22s;width:20px;height:20px"></div>
+    <div class="leaf" style="left:75%;animation-duration:13s;animation-delay:-10.95s;width:21px;height:21px"></div>
+    <div class="leaf" style="left:86%;animation-duration:14s;animation-delay:-11.68s;width:14px;height:14px"></div>
+    <div class="leaf" style="left:0%;animation-duration:15s;animation-delay:-12.41s;width:15px;height:15px"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
     <div class="leaf"></div>
@@ -629,6 +788,7 @@
     <div class="logo">LeafTiers</div>
     <nav class="nav-links">
       <a href="#">Rankings</a>
+      <a class="discord-link" href="https://discord.gg/MT2hbVMkjv" target="_blank" rel="noopener noreferrer">Discord</a>
     </nav>
   </header>
 
