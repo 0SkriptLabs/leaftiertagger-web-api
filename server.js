@@ -57,12 +57,42 @@ function notifyClients() {
 
 // Initialize data file if it doesn't exist
 function initDataFile() {
-    if (!fs.existsSync(DATA_FILE)) {
-        const initialData = {
-            players: {}
-        };
-        fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
+    let data = {
+        players: {}
+    };
+
+    if (fs.existsSync(DATA_FILE)) {
+        try {
+            const parsed = JSON.parse(
+                fs.readFileSync(DATA_FILE, 'utf8')
+            );
+
+            if (
+                parsed &&
+                typeof parsed === 'object'
+            ) {
+                data = parsed;
+            }
+        } catch (error) {
+            console.error(
+                'Invalid tiers.json:',
+                error
+            );
+        }
     }
+
+    if (
+        !data.players ||
+        typeof data.players !== 'object' ||
+        Array.isArray(data.players)
+    ) {
+        data.players = {};
+    }
+
+    fs.writeFileSync(
+        DATA_FILE,
+        JSON.stringify(data, null, 2)
+    );
 }
 
 // API endpoint for the Minecraft mod to get all tiers
