@@ -991,38 +991,44 @@
       renderPlayers();
     }
 
-    async function loadPlayersFromAPI() {
-      // 1) Try the live API first.
-      const apiData = await fetchJson("/api/tiers");
+async function loadPlayersFromAPI() {
+  const apiData = await fetchJson("/api/tiers");
 
-      if (hasPlayers(apiData)) {
-        saveTierCache(apiData);
-        applyTierData(apiData);
-        return;
-      }
-
-      // 2) If API is unavailable/empty, try the tiers.json file in your site/repo.
-      const jsonData = await fetchJson("/tiers.json");
-
-      if (hasPlayers(jsonData)) {
-        saveTierCache(jsonData);
-        applyTierData(jsonData);
-        return;
-      }
-
-      // 3) Last resort: use the most recent good copy saved in this browser.
-      const cachedData = loadTierCache();
-
-      if (cachedData) {
-        console.log("Loaded players from local saved cache.");
-        applyTierData(cachedData);
-        return;
-      }
-
-      // Nothing could be loaded.
-      players = [];
-      renderPlayers();
+  if (
+    apiData &&
+    apiData.players &&
+    typeof apiData.players === "object"
+  ) {
+    try {
+      localStorage.setItem(
+        TIER_CACHE_KEY,
+        JSON.stringify(apiData)
+      );
+    } catch (error) {
+      console.warn(
+        "Could not save tier cache:",
+        error
+      );
     }
+
+    applyTierData(apiData);
+    return;
+  }
+
+  const jsonData = await fetchJson("/tiers.json");
+
+  if (
+    jsonData &&
+    jsonData.players &&
+    typeof jsonData.players === "object"
+  ) {
+    applyTierData(jsonData);
+    return;
+  }
+
+  players = [];
+  renderPlayers();
+}
 
     function getGamemodeIcon(category) {
       const icons = {
