@@ -47,7 +47,7 @@ function pointsForTier(tier) {
   return tierPoints[tier] || 0;
 }
 
-const GUILD_ID = "1530708697796448346";
+const GUILD_ID = "1546242914852798565";
 
 const STAFF_ROLE_ID = "1530711943982350466";
 const WAITLIST_ROLE_ID = "1530917943297314846";
