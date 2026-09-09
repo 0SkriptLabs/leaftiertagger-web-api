@@ -1,52 +1,8 @@
 {
   "players": {
-    "edgemainn": {
+    "Chiffon_0": {
       "gamemodes": {
         "Vanilla": {
-          "tier": "LT3",
-          "points": 6
-        }
-      }
-    },
-    "2p41": {
-      "gamemodes": {
-        "Vanilla": {
-          "tier": "HT2",
-          "points": 30
-        }
-      }
-    },
-    "xa67": {
-      "gamemodes": {
-        "Vanilla": {
-          "tier": "LT5",
-          "points": 1
-        }
-      }
-    },
-    "chiffon_0": {
-      "gamemodes": {
-        "Vanilla": {
-          "tier": "HT3",
-          "points": 10
-        }
-      }
-    },
-    "mz0k": {
-      "gamemodes": {
-        "Vanilla": {
-          "tier": "HT3",
-          "points": 10
-        }
-      }
-    },
-    "skateboardkayden": {
-      "gamemodes": {
-        "Vanilla": {
-          "tier": "HT5",
-          "points": 2
-        }
-      }
-    }
-  }
+          "tier": "HT1",
+          "points": 50
 }
