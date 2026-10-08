@@ -87,7 +87,7 @@ textarea::placeholder{color:#8e8e8e}
 <textarea id="input" rows="1" placeholder="Message..."></textarea>
 <button class="send" id="send" type="submit" disabled>↑</button>
 </form>
-<div class="disclaimer">AI chat interface</div>
+<div class="disclaimer">AI can make mistakes. Check important information.</div>
 </div>
 </main>
 </div>
@@ -117,12 +117,36 @@ const item=document.createElement("div");item.className="chat active";item.textC
 input.value="";resize();input.focus();
 }
 document.getElementById("newChat").onclick=newChat;
-document.getElementById("composer").addEventListener("submit",e=>{
-e.preventDefault();const text=input.value.trim();if(!text)return;
-addMessage(text,"user");count++;
+const API_URL="http://127.0.0.1:3000/chat_completion";
+const API_KEY="edgemainn-local-test-key";
+let busy=false;
+async function askAI(text){
+const thinking=document.createElement("div");
+thinking.className="msg ai";
+const av=document.createElement("div");av.className="avatar";av.textContent="C";
+thinking.appendChild(av);
+const bubble=document.createElement("div");bubble.className="bubble";bubble.textContent="Thinking…";thinking.appendChild(bubble);
+messages.appendChild(thinking);
+document.getElementById("viewport").scrollTop=document.getElementById("viewport").scrollHeight;
+try{
+const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({api_key:API_KEY,provider:"Pollinations",content:text,stream:false})});
+const data=await response.json();
+if(!response.ok||data.error)throw new Error(data.error||"Request failed");
+bubble.textContent=data.response||"No response received.";
+}catch(error){
+bubble.textContent="I couldn't connect to the AI backend. Make sure GPTGateway is running on http://127.0.0.1:3000.";
+console.error(error);
+}
+document.getElementById("viewport").scrollTop=document.getElementById("viewport").scrollHeight;
+}
+document.getElementById("composer").addEventListener("submit",async e=>{
+e.preventDefault();if(busy)return;const text=input.value.trim();if(!text)return;
+busy=true;send.disabled=true;addMessage(text,"user");count++;
 const title=text.length>34?text.slice(0,34)+"…":text;
 if(count===1){const item=document.querySelector(".chat.active");if(item)item.textContent=title}
 input.value="";resize();
+await askAI(text);
+busy=false;resize();input.focus();
 });
 resize();
 </script>
